@@ -8,6 +8,6 @@ app.use(cors());
 
 app.use('/ping',()=>{console.log("pong")})
 
-app.listen(process.env.Port,()=>{
-    console.log("server started on port :",process.env.Port);
+app.listen(8080,()=>{
+    console.log("server started on port :");
 });
