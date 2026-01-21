@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
-
+import { Link } from "react-router-dom";
 export default function Navbar() {
   const [open, setOpen] = useState(false);
 
@@ -26,9 +26,9 @@ export default function Navbar() {
             <div className="w-10 h-10 bg-green-700 text-white flex items-center justify-center rounded font-bold">
               🌱
             </div>
-            <span className="text-xl font-extrabold text-green-800">
+            <Link to="/"><span className="text-xl font-extrabold text-green-800">
               Evergreen
-            </span>
+            </span></Link>
           </div>
 
           {/* DESKTOP MENU */}
@@ -74,7 +74,7 @@ export default function Navbar() {
         {/* MOBILE MENU */}
         {open && (
           <div className="md:hidden bg-white px-6 py-4 space-y-4 font-semibold text-green-800 shadow-lg">
-            <div>Home</div>
+            <div><Link to="/">Home</Link></div>
             <div>Services</div>
             <div>Gallery</div>
             <div>Blog</div>

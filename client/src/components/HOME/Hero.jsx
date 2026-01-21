@@ -1,4 +1,4 @@
-import gardener from "../assets/images/download.jpg"; // put image in src/assets/
+import gardener from "../../assets/images/download.jpg"; // put image in src/assets/
 
 export default function Hero() {
   return (
