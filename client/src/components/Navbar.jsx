@@ -1,40 +1,43 @@
 import { useState } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
+import logoImg from "../assets/images/logo.jpg";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-[9999] w-full">
-      
       {/* TOP INFO BAR */}
       <div className="hidden md:flex justify-between items-center bg-green-900 text-white text-sm px-6 py-2">
-        <span>🌿 Landscaping & Nursery Experts</span>
+        <span><i class="fa-solid fa-leaf"></i> Landscaping & Nursery Experts</span>
         <div className="flex gap-6">
-          <span>📍 Pune</span>
-          <span>📞 9767671968</span>
-          <span>⏰ Mon–Sat: 9AM–8PM</span>
+          <span><i class="fa-solid fa-location-dot"></i> Pune</span>
+          <span><i class="fa-solid fa-phone"></i> 9767671968</span>
+          <span><i class="fa-solid fa-clock"></i> Mon–Sat: 9AM–8PM</span>
         </div>
       </div>
 
       {/* MAIN NAV */}
       <nav className="bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          
           {/* LOGO */}
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-green-700 text-white flex items-center justify-center rounded font-bold">
-              🌱
-            </div>
+            <img
+              src={logoImg}
+              alt="Janai Landscape Logo"
+              className="w-12 h-12 object-contain"
+            />
             <span className="text-xl font-extrabold text-green-800">
-              Evergreen
+              Janai Landscape
             </span>
           </div>
 
           {/* DESKTOP MENU */}
           <ul className="hidden md:flex gap-8 font-semibold text-green-800">
-            
-            <li className="hover:text-lime-600 cursor-pointer">Home</li>
+            <li className="hover:text-lime-600 cursor-pointer">
+              <Link to="/home">Home</Link>
+            </li>
 
             {/* DROPDOWN */}
             <li className="relative group cursor-pointer">
@@ -53,7 +56,9 @@ export default function Navbar() {
 
             <li className="hover:text-lime-600 cursor-pointer">Gallery</li>
             <li className="hover:text-lime-600 cursor-pointer">Blog</li>
-            <li className="hover:text-lime-600 cursor-pointer">About</li>
+            <li className="hover:text-lime-600 cursor-pointer">
+              <Link to="/about">About</Link>
+            </li>
             <li className="hover:text-lime-600 cursor-pointer">Contact</li>
           </ul>
 
