@@ -1,14 +1,20 @@
 import express from "express";
-const app = express();
-import dotenv from "dotenv/config";
+import dotenv from "dotenv";
 import cors from "cors";
- 
-app.use(express.json());
+import mongoose from "mongoose";
+import serviceRoutes from "./routes/service.routes.js";
+
+dotenv.config();
+
+const app = express();
 app.use(cors());
+app.use(express.json());
 
-app.use('/ping',()=>{console.log("pong")});
+app.use("/api/services", serviceRoutes);
 
-app.listen(8080,()=>{
-    console.log("server started on port :");
-});
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Connected"));
 
+app.listen(5000, () =>
+  console.log("Server running on port 5000")
+);
