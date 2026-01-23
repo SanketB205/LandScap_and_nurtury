@@ -32,9 +32,11 @@ export default function Navbar() {
           </div>
 
           {/* DESKTOP MENU */}
+          
           <ul className="hidden md:flex gap-8 font-semibold text-green-800">
-            
-            <li className="hover:text-lime-600 cursor-pointer">Home</li>
+            <Link to="/">
+            <li className="hover:text-lime-600 cursor-pointer" >Home</li>
+            </Link>
 
             {/* DROPDOWN */}
             <li className="relative group cursor-pointer">
@@ -74,7 +76,7 @@ export default function Navbar() {
         {/* MOBILE MENU */}
         {open && (
           <div className="md:hidden bg-white px-6 py-4 space-y-4 font-semibold text-green-800 shadow-lg">
-            <div><Link to="/">Home</Link></div>
+            <div>Home</div>
             <div>Services</div>
             <div>Gallery</div>
             <div>Blog</div>

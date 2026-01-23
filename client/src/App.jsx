@@ -9,7 +9,6 @@ function App() {
       <Navbar />
 
       <Routes>
-        <Route path="/" element={<HomePage />} />
         <Route path="/services" element={<AllServices />} />
       </Routes>
     </BrowserRouter>
