@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import Navbar from '../Navbar'
 import Hero from './Hero'
-import Services from './Services'
+import Services from '../../pages/Services'
 import { Home } from 'lucide-react'
 
 function HomePage() {

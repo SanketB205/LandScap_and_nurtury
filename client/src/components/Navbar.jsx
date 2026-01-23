@@ -34,9 +34,8 @@ export default function Navbar() {
           {/* DESKTOP MENU */}
           
           <ul className="hidden md:flex gap-8 font-semibold text-green-800">
-            <Link to="/">
-            <li className="hover:text-lime-600 cursor-pointer" >Home</li>
-            </Link>
+            
+           <Link to="/"> <li className="hover:text-lime-600 cursor-pointer">Home</li></Link>
 
             {/* DROPDOWN */}
             <li className="relative group cursor-pointer">

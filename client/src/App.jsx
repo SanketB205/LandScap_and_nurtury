@@ -1,15 +1,23 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
 import HomePage from "./components/HOME/HomePage";
-import AllServices from "./pages/AllServices";
+import ServicesPage from "./pages/Services";
+import ServiceDetails from "./pages/ServiceDetails";
+import AddService from "./pages/Admin/AddServices";
+import AdminServices from "./pages/Admin/AdminSevices";
+import EditService from "./pages/Admin/EditServices";
+import Navbar from "./components/Navbar";
 
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
-
+    <Navbar/>
       <Routes>
-        <Route path="/services" element={<AllServices />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/services" element={<ServicesPage />} />
+        <Route path="/services/:slug" element={<ServiceDetails />} />
+        <Route path="/admin/services" element={<AdminServices />} />
+        <Route path="/admin/services/add" element={<AddService />} />
+        <Route path="/admin/services/edit/:id" element={<EditService />} />
       </Routes>
     </BrowserRouter>
   );
