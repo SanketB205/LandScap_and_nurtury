@@ -27,7 +27,18 @@ const AddService = () => {
     };
 
     await axios.post("http://localhost:5000/api/services", payload);
+
     alert("✅ Service Added Successfully");
+
+    // RESET FORM
+    setForm({
+      title: "",
+      shortDescription: "",
+      intro: "",
+      features: "",
+      advantages: "",
+      bannerImage: "",
+    });
   };
 
   return (
@@ -36,9 +47,7 @@ const AddService = () => {
 
         {/* Header */}
         <div className="bg-gradient-to-r from-green-700 to-green-500 p-6">
-          <h1 className="text-3xl font-bold text-white">
-            🌿 Add New Service
-          </h1>
+          <h1 className="text-3xl font-bold text-white">🌿 Add New Service</h1>
           <p className="text-green-100 mt-1">
             Create a new landscaping or nursery service
           </p>
@@ -52,80 +61,84 @@ const AddService = () => {
 
           {/* Title */}
           <div className="md:col-span-2">
-            <label className="label">Service Title</label>
+            <label className="block font-semibold mb-1">Service Title</label>
             <input
               name="title"
-              placeholder="Artificial Grass Installation"
-              className="input"
+              value={form.title}
               onChange={handleChange}
+              placeholder="Artificial Grass Installation"
+              className="w-full p-3 border rounded-xl focus:ring-2 focus:ring-green-500"
               required
             />
           </div>
 
           {/* Short Description */}
           <div className="md:col-span-2">
-            <label className="label">Short Description</label>
+            <label className="block font-semibold mb-1">Short Description</label>
             <textarea
               name="shortDescription"
-              placeholder="Short summary for cards & SEO"
-              className="input h-24"
+              value={form.shortDescription}
               onChange={handleChange}
+              className="w-full p-3 border rounded-xl h-24 focus:ring-2 focus:ring-green-500"
             />
           </div>
 
           {/* Intro */}
           <div className="md:col-span-2">
-            <label className="label">Introduction</label>
+            <label className="block font-semibold mb-1">Introduction</label>
             <textarea
               name="intro"
-              placeholder="Detailed intro about the service"
-              className="input h-32"
+              value={form.intro}
               onChange={handleChange}
+              className="w-full p-3 border rounded-xl h-32 focus:ring-2 focus:ring-green-500"
             />
           </div>
 
           {/* Features */}
           <div>
-            <label className="label">Features</label>
+            <label className="block font-semibold mb-1">Features</label>
             <textarea
               name="features"
-              placeholder="• Feature one&#10;• Feature two"
-              className="input h-40"
+              value={form.features}
               onChange={handleChange}
+              placeholder="Feature one&#10;Feature two"
+              className="w-full p-3 border rounded-xl h-40 focus:ring-2 focus:ring-green-500"
             />
           </div>
 
           {/* Advantages */}
           <div>
-            <label className="label">Advantages</label>
+            <label className="block font-semibold mb-1">Advantages</label>
             <textarea
               name="advantages"
-              placeholder="• Advantage one&#10;• Advantage two"
-              className="input h-40"
+              value={form.advantages}
               onChange={handleChange}
+              placeholder="Advantage one&#10;Advantage two"
+              className="w-full p-3 border rounded-xl h-40 focus:ring-2 focus:ring-green-500"
             />
           </div>
 
           {/* Image URL */}
           <div className="md:col-span-2">
-            <label className="label">Banner Image URL</label>
+            <label className="block font-semibold mb-1">Banner Image URL</label>
             <input
               type="text"
-              placeholder="https://images.unsplash.com/..."
-              className="input"
               value={form.bannerImage}
               onChange={(e) =>
                 setForm({ ...form, bannerImage: e.target.value })
               }
+              placeholder="https://images.unsplash.com/..."
+              className="w-full p-3 border rounded-xl focus:ring-2 focus:ring-green-500"
             />
           </div>
 
-          {/* Image Preview */}
+          {/* Preview */}
           {form.bannerImage && (
             <div className="md:col-span-2">
               <p className="text-sm text-gray-500 mb-2">Preview</p>
               <img
                 src={form.bannerImage}
+                alt="preview"
                 className="w-full h-64 object-cover rounded-xl border"
               />
             </div>
