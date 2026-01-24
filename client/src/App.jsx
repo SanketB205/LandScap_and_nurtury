@@ -19,6 +19,7 @@ function App() {
         <Route path="/admin/services" element={<AdminServices />} />
         <Route path="/admin/services/add" element={<AddService />} />
         <Route path="/admin/services/edit/:id" element={<EditService />} />
+        <Route path="/about" element={<AboutPage />} />
 
       </Routes>
     </BrowserRouter>
