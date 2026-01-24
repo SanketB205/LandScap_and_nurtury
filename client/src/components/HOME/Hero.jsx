@@ -12,7 +12,7 @@ export default function Hero() {
         {/* LEFT CONTENT */}
         <div>
           <span className="inline-block mb-4 text-sm font-semibold text-green-700 bg-green-100 px-4 py-1 rounded-full">
-            🌱 Transforming lawns into lush green
+            <i class="fa-brands fa-canadian-maple-leaf"></i> Transforming lawns into lush green
           </span>
 
           <h1 className="text-4xl md:text-5xl font-extrabold text-green-900 leading-tight">
