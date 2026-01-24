@@ -59,9 +59,9 @@ export default function Navbar() {
           </ul>
 
           {/* CTA */}
-          <button className="hidden md:block bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded-full">
-            Get Quote
-          </button>
+          <Link to="/auth"><button className="hidden md:block bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded-full">
+            Login 🌿
+          </button></Link>
 
           {/* MOBILE ICON */}
           <button
@@ -75,12 +75,14 @@ export default function Navbar() {
         {/* MOBILE MENU */}
         {open && (
           <div className="md:hidden bg-white px-6 py-4 space-y-4 font-semibold text-green-800 shadow-lg">
-            <div>Home</div>
-            <div>Services</div>
+           <div><Link to="/">Home</Link></div>
+           <div> <Link to="/services">Services</Link></div>
             <div>Gallery</div>
             <div>Blog</div>
-            <div>About</div>
-            <div>Contact</div>
+            <div><Link to="/about">About</Link></div>
+            <div><Link to="/auth"><button
+              className="w-full bg-gradient-to-r from-green-700 to-green-600 hover:from-green-800 hover:to-green-700 text-white font-semibold py-3 rounded-xl transition shadow-lg"
+            >Login</button></Link></div>
           </div>
         )}
       </nav>
