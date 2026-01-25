@@ -1,8 +1,50 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 import bgImage from "../../assets/images/landscape_bg.jpg";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: ""
+  });
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const endpoint = isLogin ? "login" : "signup";
+      const payload = isLogin
+        ? { email: formData.email, password: formData.password }
+        : formData;
+
+      const res = await axios.post(`http://localhost:5000/api/auth/${endpoint}`, payload);
+
+      if (res.data.success) {
+        if (isLogin) {
+          localStorage.setItem("token", res.data.jwtToken);
+          localStorage.setItem("loggedInUser", res.data.name);
+          toast.success(res.data.message);
+          setTimeout(() => {
+            navigate("/");
+          }, 1000)
+        } else {
+          toast.success("Signup successful! Please login.");
+          setIsLogin(true);
+        }
+      }
+    } catch (err) {
+      const errorMsg = err.response?.data?.error || err.response?.data?.message || "Something went wrong";
+      toast.error(errorMsg);
+    }
+  };
 
   return (
     <div
@@ -14,7 +56,7 @@ const AuthPage = () => {
 
       {/* AUTH CARD */}
       <div className="relative grid md:grid-cols-2 w-full max-w-5xl bg-white/95 backdrop-blur-lg rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.35)] overflow-hidden">
-        
+
         {/* LEFT BRANDING */}
         <div className="hidden md:flex flex-col justify-center items-center bg-gradient-to-br from-green-900 via-green-800 to-green-700 text-white p-12">
           <h1 className="text-4xl font-extrabold mb-4 tracking-wide">
@@ -56,24 +98,33 @@ const AuthPage = () => {
             <div className="flex-1 h-px bg-gray-300" />
           </div>
 
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             {!isLogin && (
               <input
                 type="text"
+                name="name"
                 placeholder="Full Name"
+                value={formData.name}
+                onChange={handleChange}
                 className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-600"
               />
             )}
 
             <input
               type="email"
+              name="email"
               placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
               className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-600"
             />
 
             <input
               type="password"
+              name="password"
               placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
               className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-600"
             />
 
