@@ -13,13 +13,13 @@ const Footer = () => {
         <div>
           <h3 className="text-white text-xl font-bold mb-4">About Us</h3>
           <p className="text-sm leading-relaxed text-gray-400">
-            EverGreen Associates is one of few companies in Pune working in
+            Janai Associates is one of few companies in Pune working in
             landscaping design & development as well as sports field construction.
             Whether it's beautifying your garden or creating professional playgrounds,
             we are there for you!
           </p>
 
-          <button className="mt-6 bg-lime-500 hover:bg-lime-600 text-white px-6 py-3 rounded font-semibold transition">
+          <button className="mt-6 bg-green-700 hover:bg-lime-600 text-white px-6 py-3 rounded font-semibold transition">
             Learn More
           </button>
         </div>
@@ -80,7 +80,7 @@ const Footer = () => {
                 <span>{time}</span>
               </li>
             ))}
-            <li className="flex justify-between font-semibold text-lime-400">
+            <li className="flex justify-between font-semibold text-green-700">
               <span>Sunday</span>
               <span className="text-white bg-gray-800 px-3 py-1 rounded">
                 CLOSED

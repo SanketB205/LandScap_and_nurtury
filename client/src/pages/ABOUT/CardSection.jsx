@@ -6,7 +6,7 @@ function CardSection() {
       
       
       <div class="flex items-center gap-4 bg-white p-6 shadow-md rounded-md">
-        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-lime-500 text-white">
+        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-green-700 text-white">
           <i class="fa-solid fa-square-check"></i>
         </div>
         <div>
@@ -17,7 +17,7 @@ function CardSection() {
 
       
       <div class="flex items-center gap-4 bg-white p-6 shadow-md rounded-md">
-        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-lime-500 text-white">
+        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-green-700 text-white">
           <i class="fa-solid fa-message"></i>
         </div>
         <div>
@@ -28,7 +28,7 @@ function CardSection() {
 
       
       <div class="flex items-center gap-4 bg-white p-6 shadow-md rounded-md">
-        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-lime-500 text-white">
+        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-green-700 text-white">
           <i class="fa-brands fa-canadian-maple-leaf"></i>
         </div>
         <div>
@@ -39,7 +39,7 @@ function CardSection() {
 
       
       <div class="flex items-center gap-4 bg-white p-6 shadow-md rounded-md">
-        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-lime-500 text-white">
+        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-green-700 text-white">
           <i class="fa-solid fa-people-carry-box"></i>
         </div>
         <div>
