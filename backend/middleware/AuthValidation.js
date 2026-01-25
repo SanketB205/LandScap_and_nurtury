@@ -1,15 +1,15 @@
-import  Joi from 'joi';
+import Joi from 'joi';
 
-export const signupValidation = (req,res,next)=>{
+export const signupValidation = (req, res, next) => {
     const schema = Joi.object({
-        name : Joi.string().min(3).max(100).required(),
-        email : Joi.string().email().required(),
+        name: Joi.string().min(3).max(100).required(),
+        email: Joi.string().email().required(),
         password: Joi.string().min(4).max(100).required(),
     });
 
-    const {error} = schema.validate(req.body);
+    const { error } = schema.validate(req.body);
 
-     if (error) {
+    if (error) {
         return res.status(400).json({
             message: "Bad Request",
             error: error.details[0].message
@@ -19,17 +19,16 @@ export const signupValidation = (req,res,next)=>{
     next();
 }
 
-export const loginValidation = (req,res,next)=>{
+export const loginValidation = (req, res, next) => {
     const schema = Joi.object({
-        email : Joi.string().email().required(),
+        email: Joi.string().email().required(),
         password: Joi.string().min(4).max(100).required(),
     });
 
-    const {error} = schema.validate(req.body);
+    const { error } = schema.validate(req.body);
 
-    if(error)
-    {
-        return res.send(400).json({message: "Bad Request" ,error});
+    if (error) {
+        return res.status(400).json({ message: "Bad Request", error: error.details[0].message });
     }
     next();
 }

@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const ServicesPage = () => {
   const [services, setServices] = useState([]);
 
   useEffect(() => {
     axios.get("http://localhost:5000/api/services")
-      .then(res => setServices(res.data));
+      .then(res => setServices(res.data))
+      .catch(err => {
+        console.error(err);
+        toast.error("Failed to load services");
+      });
   }, []);
 
   return (

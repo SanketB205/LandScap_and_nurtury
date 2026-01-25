@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 import imgDemo from "../assets/images/demo.jpg";
 const ServiceDetails = () => {
   const { slug } = useParams();
@@ -9,14 +10,18 @@ const ServiceDetails = () => {
   useEffect(() => {
     axios
       .get(`http://localhost:5000/api/services/${slug}`)
-      .then(res => setService(res.data));
+      .then(res => setService(res.data))
+      .catch(err => {
+        console.error(err);
+        toast.error("Failed to load service details");
+      });
   }, [slug]);
 
   if (!service) return <p>Loading...</p>;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
-      
+
       {/* TITLE */}
       <h1 className="text-4xl font-bold text-green-700">
         {service.title}
@@ -54,13 +59,13 @@ const ServiceDetails = () => {
       <h2 className="text-2xl font-semibold mt-10">Our Work</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
         {
-        //service.gallery.map((img, i) => (
+          //service.gallery.map((img, i) => (
           <img
             // key={i}
             src={imgDemo}
             className="rounded-lg object-cover h-40 w-full"
           />
-       // ))
+          // ))
         }
       </div>
     </div>

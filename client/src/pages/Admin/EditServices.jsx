@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const EditService = () => {
     const { id } = useParams();
@@ -15,7 +16,8 @@ const EditService = () => {
                     features: service.features.join("\n"),
                     advantages: service.advantages.join("\n"),
                 });
-            });
+            })
+            .catch(err => toast.error("Failed to load service"));
     }, [id]);
 
     const uploadImage = async (file) => {
@@ -35,18 +37,23 @@ const EditService = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const payload = {
-            ...form,
-            features: form.features.split("\n"),
-            advantages: form.advantages.split("\n"),
-        };
+        try {
+            const payload = {
+                ...form,
+                features: form.features.split("\n"),
+                advantages: form.advantages.split("\n"),
+            };
 
-        await axios.put(
-            `http://localhost:5000/api/services/${id}`,
-            payload
-        );
+            await axios.put(
+                `http://localhost:5000/api/services/${id}`,
+                payload
+            );
 
-        alert("Service Updated");
+            toast.success("Service Updated");
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to update service");
+        }
     };
 
     if (!form) return <p>Loading...</p>;
