@@ -6,7 +6,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-[9999] w-full">
-      
+
       {/* TOP INFO BAR */}
       <div className="hidden md:flex justify-between items-center bg-green-900 text-white text-sm px-6 py-2">
         <span><i className="fa-solid fa-leaf"></i> Landscaping & Nursery Experts</span>
@@ -20,11 +20,11 @@ export default function Navbar() {
       {/* MAIN NAV */}
       <nav className="bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          
+
           {/* LOGO */}
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 bg-green-700 text-white flex items-center justify-center rounded font-bold">
-              <i className="fa-solid fa-leaf"></i> 
+              <i className="fa-solid fa-leaf"></i>
             </div>
             <Link to="/"><span className="text-xl font-extrabold text-green-800">
               Janai Landscape Services
@@ -32,30 +32,57 @@ export default function Navbar() {
           </div>
 
           {/* DESKTOP MENU */}
-          
-          <ul className="hidden md:flex gap-8 font-semibold text-green-800">
-            
-           <Link to="/"> <li className="hover:text-lime-600 cursor-pointer">Home</li></Link>
 
-            {/* DROPDOWN */}
-            <li className="relative group cursor-pointer">
-              <div className="flex items-center gap-1 hover:text-lime-600">
-                Services <ChevronDown size={16} />
-              </div>
-
-              {/* IMPORTANT: absolute + z-index */}
-              <ul className="absolute left-0 top-full mt-3 w-48 bg-white shadow-xl rounded-md opacity-0 group-hover:opacity-100 invisible group-hover:visible transition z-[9999]">
-                <li className="px-4 py-2 hover:bg-lime-100">Garden Design</li>
-                <li className="px-4 py-2 hover:bg-lime-100">Nursery Plants</li>
-                <li className="px-4 py-2 hover:bg-lime-100">Lawn Care</li>
-                <li className="px-4 py-2 hover:bg-lime-100">Irrigation</li>
-              </ul>
+          <ul className="hidden md:flex items-center gap-8 font-semibold text-green-800">
+            <li className="hover:text-lime-600 transition-colors cursor-pointer">
+              <Link to="/">Home</Link>
             </li>
 
-            <li className="hover:text-lime-600 cursor-pointer">Gallery</li>
-            <li className="hover:text-lime-600 cursor-pointer">Blog</li>
-          <Link to="/about"><li className="hover:text-lime-600 cursor-pointer">About</li></Link>  
-           <Link to="/contact"><li className="hover:text-lime-600 cursor-pointer">Contact</li></Link>
+            {/* DROPDOWN - Services */}
+            <li className="relative group py-5 cursor-pointer">
+              <div className="flex items-center gap-1 hover:text-lime-600 transition-colors">
+                Services <ChevronDown size={16} className="group-hover:rotate-180 transition-transform duration-300" />
+              </div>
+
+              {/* DROPDOWN MENU */}
+              <div className="absolute left-0 top-full w-56 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 invisible group-hover:visible transition-all duration-300 z-[9999] pt-2">
+                <ul className="bg-white shadow-2xl rounded-2xl overflow-hidden border border-lime-100/50">
+                  <Link to="/services/garden-design">
+                    <li className="px-5 py-3 hover:bg-lime-50 hover:text-green-700 transition font-medium border-b border-gray-50 last:border-0 flex items-center gap-3">
+                      <span className="w-1.5 h-1.5 bg-lime-400 rounded-full"></span>
+                      Garden Design
+                    </li>
+                  </Link>
+                  <Link to="/services/nursery-plants">
+                    <li className="px-5 py-3 hover:bg-lime-50 hover:text-green-700 transition font-medium border-b border-gray-50 last:border-0 flex items-center gap-3">
+                      <span className="w-1.5 h-1.5 bg-lime-400 rounded-full"></span>
+                      Nursery Plants
+                    </li>
+                  </Link>
+                  <Link to="/services/lawn-care">
+                    <li className="px-5 py-3 hover:bg-lime-50 hover:text-green-700 transition font-medium border-b border-gray-50 last:border-0 flex items-center gap-3">
+                      <span className="w-1.5 h-1.5 bg-lime-400 rounded-full"></span>
+                      Lawn Care
+                    </li>
+                  </Link>
+                  <Link to="/services/irrigation">
+                    <li className="px-5 py-3 hover:bg-lime-50 hover:text-green-700 transition font-medium border-b border-gray-50 last:border-0 flex items-center gap-3">
+                      <span className="w-1.5 h-1.5 bg-lime-400 rounded-full"></span>
+                      Irrigation
+                    </li>
+                  </Link>
+                </ul>
+              </div>
+            </li>
+
+            <li className="hover:text-lime-600 transition-colors cursor-pointer">Gallery</li>
+            <li className="hover:text-lime-600 transition-colors cursor-pointer">Blog</li>
+            <li className="hover:text-lime-600 transition-colors cursor-pointer">
+              <Link to="/about">About</Link>
+            </li>
+            <li className="hover:text-lime-600 transition-colors cursor-pointer">
+              <Link to="/contact">Contact</Link>
+            </li>
           </ul>
 
           {/* CTA */}
@@ -75,8 +102,8 @@ export default function Navbar() {
         {/* MOBILE MENU */}
         {open && (
           <div className="md:hidden bg-white px-6 py-4 space-y-4 font-semibold text-green-800 shadow-lg">
-           <div><Link to="/">Home</Link></div>
-           <div> <Link to="/services">Services</Link></div>
+            <div><Link to="/">Home</Link></div>
+            <div> <Link to="/services">Services</Link></div>
             <div>Gallery</div>
             <div>Blog</div>
             <div><Link to="/about">About</Link></div>
