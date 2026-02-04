@@ -49,25 +49,25 @@ export default function Navbar() {
                 <ul className="bg-white shadow-2xl rounded-2xl overflow-hidden border border-lime-100/50">
                   <Link to="/services/garden-design">
                     <li className="px-5 py-3 hover:bg-lime-50 hover:text-green-700 transition font-medium border-b border-gray-50 last:border-0 flex items-center gap-3">
-                      <span className="w-1.5 h-1.5 bg-lime-400 rounded-full"></span>
+                      <span className="w-1.5 h-1.5 bg-green-800 rounded-full"></span>
                       Garden Design
                     </li>
                   </Link>
                   <Link to="/services/nursery-plants">
                     <li className="px-5 py-3 hover:bg-lime-50 hover:text-green-700 transition font-medium border-b border-gray-50 last:border-0 flex items-center gap-3">
-                      <span className="w-1.5 h-1.5 bg-lime-400 rounded-full"></span>
+                      <span className="w-1.5 h-1.5 bg-green-800 rounded-full"></span>
                       Nursery Plants
                     </li>
                   </Link>
                   <Link to="/services/lawn-care">
                     <li className="px-5 py-3 hover:bg-lime-50 hover:text-green-700 transition font-medium border-b border-gray-50 last:border-0 flex items-center gap-3">
-                      <span className="w-1.5 h-1.5 bg-lime-400 rounded-full"></span>
+                      <span className="w-1.5 h-1.5 bg-green-800 rounded-full"></span>
                       Lawn Care
                     </li>
                   </Link>
                   <Link to="/services/irrigation">
                     <li className="px-5 py-3 hover:bg-lime-50 hover:text-green-700 transition font-medium border-b border-gray-50 last:border-0 flex items-center gap-3">
-                      <span className="w-1.5 h-1.5 bg-lime-400 rounded-full"></span>
+                      <span className="w-1.5 h-1.5 bg-green-800 rounded-full"></span>
                       Irrigation
                     </li>
                   </Link>
