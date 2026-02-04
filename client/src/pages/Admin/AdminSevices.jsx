@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const AdminServices = () => {
   const [services, setServices] = useState([]);
@@ -17,6 +18,7 @@ const AdminServices = () => {
       setLoading(false);
     } catch (err) {
       console.error(err);
+      toast.error("Failed to fetch services");
       setLoading(false);
     }
   };
@@ -29,9 +31,11 @@ const AdminServices = () => {
 
     try {
       await axios.delete(`http://localhost:5000/api/services/${id}`);
+      toast.success("Service deleted successfully");
       fetchServices();
     } catch (err) {
       console.error(err);
+      toast.error("Failed to delete service");
     }
   };
 

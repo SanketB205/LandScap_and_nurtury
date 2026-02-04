@@ -1,48 +1,54 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import { servicesData } from "../data/servicesData";
 
 const ServicesPage = () => {
-  const [services, setServices] = useState([]);
-
-  useEffect(() => {
-    axios.get("http://localhost:5000/api/services")
-      .then(res => setServices(res.data));
-  }, []);
-
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold text-green-700 mb-10">
-        Our Services
-      </h1>
+    <div className="bg-[#f6fff3] min-h-screen py-16">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="mb-12">
+          <h1 className="text-5xl font-extrabold text-green-900">
+            Our <span className="text-lime-600">Services</span>
+          </h1>
+          <p className="mt-4 text-gray-600 text-lg max-w-2xl">
+            Explore our wide range of professional landscaping and nursery services designed to create and maintain your perfect outdoor space.
+          </p>
+        </div>
 
-      <div className="grid md:grid-cols-3 gap-8">
-        {services.map(service => (
-          <div key={service._id}
-            className="bg-white rounded-xl shadow hover:shadow-lg transition">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {servicesData.map((service, index) => (
+            <div key={index}
+              className="bg-white rounded-[2rem] shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group">
 
-            <img
-              src={service.bannerImage}
-              className="h-48 w-full object-cover rounded-t-xl"
-            />
+              <div className="h-64 overflow-hidden relative">
+                <img
+                  src={service.img}
+                  alt={service.title}
+                  className="h-full w-full object-cover group-hover:scale-110 transition duration-700"
+                />
+                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-all"></div>
+              </div>
 
-            <div className="p-5">
-              <h3 className="text-xl font-semibold">
-                {service.title}
-              </h3>
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-green-900 group-hover:text-lime-600 transition-colors">
+                  {service.title}
+                </h3>
 
-              <p className="text-gray-600 mt-2">
-                {service.shortDescription}
-              </p>
+                <p className="text-gray-600 mt-4 leading-relaxed line-clamp-3">
+                  {service.intro}
+                </p>
 
-              <Link
-                to={`/services/${service.slug}`}
-                className="inline-block mt-4 text-green-600 font-semibold hover:underline">
-                Read More →
-              </Link>
+                <Link
+                  to={`/services/${service.slug}`}
+                  className="inline-flex items-center gap-2 mt-8 text-lime-600 font-bold hover:gap-4 transition-all">
+                  Read More
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                  </svg>
+                </Link>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

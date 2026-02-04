@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import slugify from "slugify";
+import { toast } from "react-toastify";
 
 const AddService = () => {
   const [form, setForm] = useState({
@@ -19,27 +20,34 @@ const AddService = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const payload = {
-      ...form,
-      slug: slugify(form.title, { lower: true }),
-      features: form.features.split("\n"),
-      advantages: form.advantages.split("\n"),
-    };
+    try {
+      const payload = {
+        ...form,
+        slug: slugify(form.title, { lower: true }),
+        features: form.features.split("\n"),
+        advantages: form.advantages.split("\n"),
+      };
 
-    await axios.post("http://localhost:5000/api/services", payload);
+      await axios.post("http://localhost:5000/api/services", payload);
 
-    alert("✅ Service Added Successfully");
+      toast.success("Service Added Successfully");
 
-    // RESET FORM
-    setForm({
-      title: "",
-      shortDescription: "",
-      intro: "",
-      features: "",
-      advantages: "",
-      bannerImage: "",
-    })
+      // RESET FORM
+      setForm({
+        title: "",
+        shortDescription: "",
+        intro: "",
+        features: "",
+        advantages: "",
+        bannerImage: "",
+      });
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to add service");
+    }
   }
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 py-12 px-4">
