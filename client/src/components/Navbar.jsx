@@ -52,7 +52,7 @@ export default function Navbar() {
               </ul>
             </li>
 
-            <li className="hover:text-lime-600 cursor-pointer">Gallery</li>
+           <Link to="/gallery"><li className="hover:text-lime-600 cursor-pointer">Gallery</li></Link> 
             <li className="hover:text-lime-600 cursor-pointer">Blog</li>
           <Link to="/about"><li className="hover:text-lime-600 cursor-pointer">About</li></Link>  
            <Link to="/contact"><li className="hover:text-lime-600 cursor-pointer">Contact</li></Link>
@@ -77,7 +77,7 @@ export default function Navbar() {
           <div className="md:hidden bg-white px-6 py-4 space-y-4 font-semibold text-green-800 shadow-lg">
            <div><Link to="/">Home</Link></div>
            <div> <Link to="/services">Services</Link></div>
-            <div>Gallery</div>
+            <div><Link to="/gallery">Gallery</Link></div>
             <div>Blog</div>
             <div><Link to="/about">About</Link></div>
             <div><Link to="/auth"><button

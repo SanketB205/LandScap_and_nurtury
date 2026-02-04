@@ -1,4 +1,47 @@
+import { useState } from "react";
+import axios from "axios";
+import slugify from "slugify";
+
 function HeroSection() {
+        const [form, setForm] = useState({
+            name: "",
+            phoneno: "",
+            email: "",
+            service: "",
+            message:""
+          });
+ const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+   try {
+      const payload = {
+        ...form,
+        slug: slugify(form.name, { lower: true }),
+        message: form.message
+      };
+
+      await axios.post("http://localhost:5000/api/contactus", payload);
+
+      alert("Contact details added successfully");
+
+      setForm({
+        name: "",
+        phoneno: "",
+        email: "",
+        services: "",
+        message: "",
+      });
+      } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("Something went wrong. Please try again!");
+    }
+
+  };
+
     return (
         <>
     <div className="w-full bg-white text-gray-700 font-sans">
@@ -14,31 +57,44 @@ function HeroSection() {
             or get in touch via our contact form.
           </p>
 
-          <form className="grid grid-cols-1 md:grid-cols-2 gap-6" method="" action="">
+          <form  onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6" >
             <input
               type="text"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
               placeholder="Your Name"
               className="border border-gray-200 px-4 py-3 focus:outline-none focus:border-green-600"
             />
             <input
               type="text"
+              name="phoneno"
+              value={form.phoneno}
+              onChange={handleChange}
               placeholder="Phone Number"
               className="border border-gray-200 px-4 py-3 focus:outline-none focus:border-green-600"
             />
 
             <input
               type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
               placeholder="Your Email"
               className="border border-gray-200 px-4 py-3 focus:outline-none focus:border-green-600"
             />
 
-            <select className="border border-gray-200 px-4 py-3 focus:outline-none focus:border-green-600">
-              <option>Landscape Development</option>
-              <option>Garden Maintenance</option>
-              <option>Plant Nursery</option>
+            <select name="service" value={form.service} onChange={handleChange} className="border border-gray-200 px-4 py-3 focus:outline-none focus:border-green-600">
+              <option value="">Select Service</option>
+              <option value="landscape">Landscape Development</option>
+              <option value="garden">Garden Maintenance</option>
+              <option value="plantnursery">Plant Nursery</option>
             </select>
 
             <textarea
+              name="message"
+              value={form.message}
+              onChange={handleChange}
               placeholder="Your Message"
               rows="5"
               className="md:col-span-2 border border-gray-200 px-4 py-3 focus:outline-none focus:border-green-600"
@@ -50,7 +106,7 @@ function HeroSection() {
                 type="submit"
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 text-sm font-medium"
               >
-               <i class="fa-solid fa-message"></i> REQUEST QUOTE
+               <i className="fa-solid fa-message"></i> REQUEST QUOTE
               </button>
 
               <a
