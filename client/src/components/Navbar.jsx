@@ -49,25 +49,25 @@ export default function Navbar() {
                 <ul className="bg-white shadow-2xl rounded-2xl overflow-hidden border border-lime-100/50">
                   <Link to="/services/garden-design">
                     <li className="px-5 py-3 hover:bg-lime-50 hover:text-green-700 transition font-medium border-b border-gray-50 last:border-0 flex items-center gap-3">
-                      <span className="w-1.5 h-1.5 bg-lime-400 rounded-full"></span>
+                      <span className="w-1.5 h-1.5 bg-green-800 rounded-full"></span>
                       Garden Design
                     </li>
                   </Link>
                   <Link to="/services/nursery-plants">
                     <li className="px-5 py-3 hover:bg-lime-50 hover:text-green-700 transition font-medium border-b border-gray-50 last:border-0 flex items-center gap-3">
-                      <span className="w-1.5 h-1.5 bg-lime-400 rounded-full"></span>
+                      <span className="w-1.5 h-1.5 bg-green-800 rounded-full"></span>
                       Nursery Plants
                     </li>
                   </Link>
                   <Link to="/services/lawn-care">
                     <li className="px-5 py-3 hover:bg-lime-50 hover:text-green-700 transition font-medium border-b border-gray-50 last:border-0 flex items-center gap-3">
-                      <span className="w-1.5 h-1.5 bg-lime-400 rounded-full"></span>
+                      <span className="w-1.5 h-1.5 bg-green-800 rounded-full"></span>
                       Lawn Care
                     </li>
                   </Link>
                   <Link to="/services/irrigation">
                     <li className="px-5 py-3 hover:bg-lime-50 hover:text-green-700 transition font-medium border-b border-gray-50 last:border-0 flex items-center gap-3">
-                      <span className="w-1.5 h-1.5 bg-lime-400 rounded-full"></span>
+                      <span className="w-1.5 h-1.5 bg-green-800 rounded-full"></span>
                       Irrigation
                     </li>
                   </Link>
@@ -75,7 +75,9 @@ export default function Navbar() {
               </div>
             </li>
 
-            <li className="hover:text-lime-600 transition-colors cursor-pointer">Gallery</li>
+            <li className="hover:text-lime-600 transition-colors cursor-pointer">
+              <Link to="/gallery">Gallery</Link>
+            </li>
             <li className="hover:text-lime-600 transition-colors cursor-pointer">Blog</li>
             <li className="hover:text-lime-600 transition-colors cursor-pointer">
               <Link to="/about">About</Link>
@@ -104,7 +106,7 @@ export default function Navbar() {
           <div className="md:hidden bg-white px-6 py-4 space-y-4 font-semibold text-green-800 shadow-lg">
             <div><Link to="/">Home</Link></div>
             <div> <Link to="/services">Services</Link></div>
-            <div>Gallery</div>
+            <div><Link to="/gallery">Gallery</Link></div>
             <div>Blog</div>
             <div><Link to="/about">About</Link></div>
             <div><Link to="/auth"><button

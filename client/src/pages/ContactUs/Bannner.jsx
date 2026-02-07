@@ -18,7 +18,7 @@ function Banner() {
       <div className="max-w-6xl mx-auto px-4 py-5 text-sm text-gray-400">
         <span>Janai Associates</span>
         <span className="mx-2">•</span>
-       <a href="/about"><span className="text-green-600 font-medium">Contact Us</span></a> 
+       <a href="/contact"><span className="text-green-600 font-medium">Contact Us</span></a> 
       </div>
       </div>
    );

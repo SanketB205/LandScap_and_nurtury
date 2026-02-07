@@ -10,6 +10,7 @@ import AboutPage from "./pages/ABOUT/AboutPage";
 import AuthPage from "./pages/Auth/AuthPage";
 import Footer from "./components/Footer";
 import ContactPage from "./pages/ContactUs/ContactPage";
+import GallaryPage from "./pages/Gallery/GalleryPage";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/auth" element={<AuthPage/>}/>
+        <Route path="/gallery" element={<GallaryPage/>}/>
         
       </Routes>
       <Footer/>
