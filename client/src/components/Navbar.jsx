@@ -1,8 +1,28 @@
-import { useState } from "react";
-import { Menu, X, ChevronDown } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Menu, X, ChevronDown, LogOut, Settings, User, Shield } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const navigate = useNavigate();
+  
+  // Use global auth context
+  const { isLoggedIn, userRole, userName, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    setShowDropdown(false);
+    navigate("/");
+  };
+
+  const handleAdminClick = () => {
+    if (userRole === "admin") {
+      navigate("/admin");
+      setShowDropdown(false);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-[9999] w-full">
@@ -87,10 +107,89 @@ export default function Navbar() {
             </li>
           </ul>
 
-          {/* CTA */}
-          <Link to="/auth"><button className="hidden md:block bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded-full">
-            Login
-          </button></Link>
+          {/* CTA - Login or Profile */}
+          {isLoggedIn ? (
+            <div className="hidden md:flex items-center gap-4">
+              {/* User Profile Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="flex items-center gap-2 bg-gradient-to-r from-green-700 to-green-600 hover:from-green-800 hover:to-green-700 text-white px-4 py-2 rounded-full transition"
+                >
+                  <img
+                    src={`https://i.pravatar.cc/40?u=${userName}`}
+                    alt={userName}
+                    className="w-6 h-6 rounded-full"
+                  />
+                  <span className="text-sm font-medium">👤 Profile</span>
+                  <ChevronDown size={16} className={`transition-transform ${showDropdown ? "rotate-180" : ""}`} />
+                </button>
+
+                {/* Dropdown Menu */}
+                {showDropdown && (
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-white shadow-2xl rounded-xl overflow-hidden border border-gray-200 z-[9999]">
+                    {/* Header */}
+                    <div className="bg-gradient-to-r from-green-700 to-green-600 text-white px-4 py-3">
+                      <p className="font-semibold text-sm">{userName}</p>
+                      <p className="text-xs text-green-100">
+                        {userRole === "admin" ? "🔐 Administrator" : "👤 User"}
+                      </p>
+                    </div>
+
+                    {/* Menu Items */}
+                    <div className="py-2">
+                      {/* Admin Dashboard - Only for admins */}
+                      {userRole === "admin" && (
+                        <>
+                          <button
+                            onClick={handleAdminClick}
+                            className="w-full text-left px-4 py-3 hover:bg-green-50 transition flex items-center gap-3 border-b border-gray-100"
+                          >
+                            <Shield size={18} className="text-green-700" />
+                            <div>
+                              <p className="font-medium text-gray-800 text-sm">Admin Panel</p>
+                              <p className="text-xs text-gray-500">Manage dashboard</p>
+                            </div>
+                          </button>
+                        </>
+                      )}
+
+                      {/* Profile Settings */}
+                      <Link
+                        to={userRole === "admin" ? "/admin/settings" : "/"}
+                        onClick={() => setShowDropdown(false)}
+                        className="w-full text-left px-4 py-3 hover:bg-blue-50 transition flex items-center gap-3 border-b border-gray-100"
+                      >
+                        <Settings size={18} className="text-blue-600" />
+                        <div>
+                          <p className="font-medium text-gray-800 text-sm">Settings</p>
+                          <p className="text-xs text-gray-500">Account preferences</p>
+                        </div>
+                      </Link>
+
+                      {/* Logout */}
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-3 hover:bg-red-50 transition flex items-center gap-3 text-red-600"
+                      >
+                        <LogOut size={18} />
+                        <div>
+                          <p className="font-medium text-sm">Logout</p>
+                          <p className="text-xs text-red-400">Sign out of your account</p>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <Link to="/auth">
+              <button className="hidden md:block bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded-full transition">
+                Login
+              </button>
+            </Link>
+          )}
 
           {/* MOBILE ICON */}
           <button
@@ -109,9 +208,54 @@ export default function Navbar() {
             <div><Link to="/products">Products</Link></div>
             <div>Blog</div>
             <div><Link to="/about">About</Link></div>
-            <div><Link to="/auth"><button
-              className="w-full bg-gradient-to-r from-green-700 to-green-600 hover:from-green-800 hover:to-green-700 text-white font-semibold py-3 rounded-xl transition shadow-lg"
-            >Login</button></Link></div>
+
+            {isLoggedIn ? (
+              <>
+                <div className="border-t border-gray-200 pt-4 mt-4">
+                  <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-200">
+                    <img
+                      src={`https://i.pravatar.cc/40?u=${userName}`}
+                      alt={userName}
+                      className="w-8 h-8 rounded-full"
+                    />
+                    <div>
+                      <p className="font-bold text-sm">{userName}</p>
+                      <p className="text-xs text-gray-500">
+                        {userRole === "admin" ? "🔐 Admin" : "👤 User"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {userRole === "admin" && (
+                    <Link to="/admin" onClick={() => setOpen(false)}>
+                      <button className="w-full bg-green-700 text-white py-2 rounded-lg mb-2 flex items-center justify-center gap-2 hover:bg-green-800 transition">
+                        <Shield size={16} /> Admin Panel
+                      </button>
+                    </Link>
+                  )}
+
+                  <Link to={userRole === "admin" ? "/admin/settings" : "/"} onClick={() => setOpen(false)}>
+                    <button className="w-full bg-blue-600 text-white py-2 rounded-lg mb-2 flex items-center justify-center gap-2 hover:bg-blue-700 transition">
+                      <Settings size={16} /> Settings
+                    </button>
+                  </Link>
+
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setOpen(false);
+                    }}
+                    className="w-full bg-red-600 text-white py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-red-700 transition"
+                  >
+                    <LogOut size={16} /> Logout
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div><Link to="/auth"><button
+                className="w-full bg-gradient-to-r from-green-700 to-green-600 hover:from-green-800 hover:to-green-700 text-white font-semibold py-3 rounded-xl transition shadow-lg"
+              >Login</button></Link></div>
+            )}
           </div>
         )}
       </nav>

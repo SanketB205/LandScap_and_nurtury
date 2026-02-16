@@ -3,15 +3,19 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import bgImage from "../../assets/images/landscape_bg.jpg";
+import { useAuth } from "../../hooks/useAuth";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: ""
   });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,6 +23,7 @@ const AuthPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const endpoint = isLogin ? "login" : "signup";
       const payload = isLogin
@@ -29,20 +34,29 @@ const AuthPage = () => {
 
       if (res.data.success) {
         if (isLogin) {
-          localStorage.setItem("token", res.data.jwtToken);
-          localStorage.setItem("loggedInUser", res.data.name);
+          // Use global auth context to set login state
+          login(res.data.jwtToken, res.data.role || "user", res.data.name, res.data.email);
           toast.success(res.data.message);
+          
+          // Redirect based on role
           setTimeout(() => {
-            navigate("/");
-          }, 1000)
+            if (res.data.role === "admin") {
+              navigate("/admin");
+            } else {
+              navigate("/");
+            }
+          }, 1000);
         } else {
           toast.success("Signup successful! Please login.");
           setIsLogin(true);
+          setFormData({ name: "", email: "", password: "" });
         }
       }
     } catch (err) {
       const errorMsg = err.response?.data?.error || err.response?.data?.message || "Something went wrong";
       toast.error(errorMsg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,13 +85,29 @@ const AuthPage = () => {
         {/* RIGHT FORM */}
         <div className="p-8 md:p-12">
           <h2 className="text-3xl font-bold text-green-900 mb-2">
-            {isLogin ? "Welcome Back" : "Create Your Account"}
+            {isLogin ? (isAdmin ? "🔐 Admin Login" : "Welcome Back") : "Create Your Account"}
           </h2>
-          <p className="text-sm text-gray-600 mb-6">
+          <p className="text-sm text-gray-600 mb-4">
             {isLogin
-              ? "Login to manage your services and projects"
+              ? isAdmin ? "Access admin dashboard and manage your platform" : "Login to manage your services and projects"
               : "Join us and grow your green business"}
           </p>
+
+          {/* Admin Toggle */}
+          {isLogin && (
+            <div className="mb-6 flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200">
+              <input
+                type="checkbox"
+                id="admin-toggle"
+                checked={isAdmin}
+                onChange={(e) => setIsAdmin(e.target.checked)}
+                className="w-4 h-4 cursor-pointer"
+              />
+              <label htmlFor="admin-toggle" className="cursor-pointer text-sm font-medium text-gray-700">
+                🔐 Admin Login
+              </label>
+            </div>
+          )}
 
           {/* GOOGLE LOGIN */}
           <button
@@ -138,9 +168,17 @@ const AuthPage = () => {
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-green-700 to-green-600 hover:from-green-800 hover:to-green-700 text-white font-semibold py-3 rounded-xl transition shadow-lg"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-green-700 to-green-600 hover:from-green-800 hover:to-green-700 text-white font-semibold py-3 rounded-xl transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {isLogin ? "Login" : "Sign Up"}
+              {loading ? (
+                <>
+                  <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  {isLogin ? "Logging in..." : "Creating account..."}
+                </>
+              ) : (
+                <>{isLogin ? "Login" : "Sign Up"}</>
+              )}
             </button>
           </form>
 

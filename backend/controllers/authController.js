@@ -27,14 +27,11 @@ export const signup = async (req,res)=>{
             })
     }
     catch(err){
-
         res.status(500).json({
             message:"Internale server error",
             success:false
         })
-
     }
-
 }
 
 export const login = async (req,res)=>{
