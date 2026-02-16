@@ -8,14 +8,13 @@ import EditService from "./pages/Admin/EditServices";
 import Navbar from "./components/Navbar";
 import AboutPage from "./pages/ABOUT/AboutPage";
 import AuthPage from "./pages/Auth/AuthPage";
-import Footer from "./components/Footer";
 import ContactPage from "./pages/ContactUs/ContactPage";
-import GallaryPage from "./pages/Gallery/GalleryPage";
+import ProductsPage from "./pages/Products";
 
 function App() {
   return (
     <BrowserRouter>
-    <Navbar/>
+      <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/services" element={<ServicesPage />} />
@@ -24,12 +23,11 @@ function App() {
         <Route path="/admin/services/add" element={<AddService />} />
         <Route path="/admin/services/edit/:id" element={<EditService />} />
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/products" element={<ProductsPage />} />
         <Route path="/contact" element={<ContactPage />} />
-        <Route path="/auth" element={<AuthPage/>}/>
-        <Route path="/gallery" element={<GallaryPage/>}/>
-        
+        <Route path="/auth" element={<AuthPage />} />
+
       </Routes>
-      <Footer/>
     </BrowserRouter>
   );
 }

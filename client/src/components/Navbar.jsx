@@ -76,7 +76,7 @@ export default function Navbar() {
             </li>
 
             <li className="hover:text-lime-600 transition-colors cursor-pointer">
-              <Link to="/gallery">Gallery</Link>
+              <Link to="/products">Products</Link>
             </li>
             <li className="hover:text-lime-600 transition-colors cursor-pointer">Blog</li>
             <li className="hover:text-lime-600 transition-colors cursor-pointer">
@@ -106,7 +106,7 @@ export default function Navbar() {
           <div className="md:hidden bg-white px-6 py-4 space-y-4 font-semibold text-green-800 shadow-lg">
             <div><Link to="/">Home</Link></div>
             <div> <Link to="/services">Services</Link></div>
-            <div><Link to="/gallery">Gallery</Link></div>
+            <div><Link to="/products">Products</Link></div>
             <div>Blog</div>
             <div><Link to="/about">About</Link></div>
             <div><Link to="/auth"><button
