@@ -98,7 +98,9 @@ export default function Navbar() {
             <li className="hover:text-lime-600 transition-colors cursor-pointer">
               <Link to="/products">Products</Link>
             </li>
-            <li className="hover:text-lime-600 transition-colors cursor-pointer">Blog</li>
+            <li className="hover:text-lime-600 transition-colors cursor-pointer"> 
+              <Link to="/blog">Blogs</Link>
+            </li>
             <li className="hover:text-lime-600 transition-colors cursor-pointer">
               <Link to="/about">About</Link>
             </li>
