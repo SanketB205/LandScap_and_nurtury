@@ -14,8 +14,12 @@ import AuthPage from "./pages/Auth/AuthPage";
 import ContactPage from "./pages/ContactUs/ContactPage";
 import ProductsPage from "./pages/Products";
 import Dashboard from "./pages/Admin/Dashboard";
-import { ProtectedAdminRoute, ProtectedUserRoute } from "./components/ProtectedRoutes";
+import { ProtectedAdminRoute } from "./components/ProtectedRoutes";
 import { AuthProvider } from "./context/AuthContext";
+
+// ✅ Add Blog Imports
+import Blogs from "./pages/Blogs/BlogPage";
+import BlogDetail from "./pages/Blogs/BlogDetail";
 
 function App() {
   return (
@@ -23,80 +27,84 @@ function App() {
       <AuthProvider>
         <Navbar />
         <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/services" element={<ServicesPage />} />
-        <Route path="/services/:slug" element={<ServiceDetails />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/products" element={<ProductsPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/auth" element={<AuthPage />} />
+          {/* Public Routes */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/services/:slug" element={<ServiceDetails />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/auth" element={<AuthPage />} />
 
-        {/* Protected Admin Routes */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedAdminRoute>
-              <Dashboard />
-            </ProtectedAdminRoute>
-          }
-        />
-        <Route
-          path="/admin/dashboard"
-          element={
-            <ProtectedAdminRoute>
-              <Dashboard />
-            </ProtectedAdminRoute>
-          }
-        />
-        <Route
-          path="/admin/services"
-          element={
-            <ProtectedAdminRoute>
-              <AdminServices />
-            </ProtectedAdminRoute>
-          }
-        />
-        <Route
-          path="/admin/add-service"
-          element={
-            <ProtectedAdminRoute>
-              <AddService />
-            </ProtectedAdminRoute>
-          }
-        />
-        <Route
-          path="/admin/services/edit/:id"
-          element={
-            <ProtectedAdminRoute>
-              <EditService />
-            </ProtectedAdminRoute>
-          }
-        />
-        <Route
-          path="/admin/contacts"
-          element={
-            <ProtectedAdminRoute>
-              <AdminContacts />
-            </ProtectedAdminRoute>
-          }
-        />
-        <Route
-          path="/admin/users"
-          element={
-            <ProtectedAdminRoute>
-              <AdminUsers />
-            </ProtectedAdminRoute>
-          }
-        />
-        <Route
-          path="/admin/settings"
-          element={
-            <ProtectedAdminRoute>
-              <AdminSettings />
-            </ProtectedAdminRoute>
-          }
-        />
+          {/* ✅ Blog Routes */}
+          <Route path="/blog" element={<Blogs />} />
+          <Route path="/blog/:id" element={<BlogDetail />} />
+
+          {/* Protected Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedAdminRoute>
+                <Dashboard />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedAdminRoute>
+                <Dashboard />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin/services"
+            element={
+              <ProtectedAdminRoute>
+                <AdminServices />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin/add-service"
+            element={
+              <ProtectedAdminRoute>
+                <AddService />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin/services/edit/:id"
+            element={
+              <ProtectedAdminRoute>
+                <EditService />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin/contacts"
+            element={
+              <ProtectedAdminRoute>
+                <AdminContacts />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <ProtectedAdminRoute>
+                <AdminUsers />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin/settings"
+            element={
+              <ProtectedAdminRoute>
+                <AdminSettings />
+              </ProtectedAdminRoute>
+            }
+          />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
