@@ -1,138 +1,209 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import slugify from "slugify";
+import AdminLayout from "../../components/AdminLayout";
 
 const EditService = () => {
-    const { id } = useParams();
-    const [form, setForm] = useState(null);
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState(null);
 
-    useEffect(() => {
-        axios.get(`http://localhost:5000/api/services`)
-            .then(res => {
-                const service = res.data.find(s => s._id === id);
-                setForm({
-                    ...service,
-                    features: service.features.join("\n"),
-                    advantages: service.advantages.join("\n"),
-                });
-            })
-            .catch(err => toast.error("Failed to load service"));
-    }, [id]);
+  useEffect(() => {
+    fetchService();
+  }, [id]);
 
-    const uploadImage = async (file) => {
-        const data = new FormData();
-        data.append("image", file);
-        const res = await axios.post(
-            "http://localhost:5000/api/services/upload",
-            data
-        );
-        return res.data.url;
-    };
+  const fetchService = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/services`);
+      const service = res.data.find((s) => s._id === id);
+      
+      if (service) {
+        setForm({
+          ...service,
+          features: Array.isArray(service.features) ? service.features.join("\n") : service.features,
+          advantages: Array.isArray(service.advantages) ? service.advantages.join("\n") : service.advantages,
+        });
+      } else {
+        toast.error("Service not found");
+        navigate("/admin/services");
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load service");
+      setLoading(false);
+    }
+  };
 
-    const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
-    };
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        try {
-            const payload = {
-                ...form,
-                features: form.features.split("\n"),
-                advantages: form.advantages.split("\n"),
-            };
+    if (!form.title || !form.shortDescription) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
 
-            await axios.put(
-                `http://localhost:5000/api/services/${id}`,
-                payload
-            );
+    setSaving(true);
+    try {
+      const payload = {
+        ...form,
+        slug: slugify(form.title, { lower: true }),
+        features: form.features.split("\n").filter(f => f.trim()),
+        advantages: form.advantages.split("\n").filter(a => a.trim()),
+      };
 
-            toast.success("Service Updated");
-        } catch (err) {
-            console.error(err);
-            toast.error("Failed to update service");
-        }
-    };
+      await axios.put(`http://localhost:5000/api/services/${id}`, payload);
+      toast.success("Service Updated Successfully");
+      navigate("/admin/services");
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to update service");
+    } finally {
+      setSaving(false);
+    }
+  };
 
-    if (!form) return <p>Loading...</p>;
-
+  if (loading) {
     return (
-        <div className="max-w-4xl mx-auto p-8">
-            <h1 className="text-3xl font-bold mb-6">Edit Service</h1>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-
-                <input
-                    name="title"
-                    value={form.title}
-                    className="input"
-                    onChange={handleChange}
-                />
-
-                <textarea
-                    name="shortDescription"
-                    value={form.shortDescription}
-                    className="input"
-                    onChange={handleChange}
-                />
-
-                <textarea
-                    name="intro"
-                    value={form.intro}
-                    className="input h-32"
-                    onChange={handleChange}
-                />
-
-                <textarea
-                    name="features"
-                    value={form.features}
-                    className="input h-32"
-                    onChange={handleChange}
-                />
-
-                <textarea
-                    name="advantages"
-                    value={form.advantages}
-                    className="input h-32"
-                    onChange={handleChange}
-                />
-
-                {/* <input
-          type="file"
-          onChange={async (e) => {
-            const url = await uploadImage(e.target.files[0]);
-            setForm({ ...form, bannerImage: url });
-          }}
-        />
-
-        {form.bannerImage && (
-          <img src={form.bannerImage} className="h-40 rounded" />
-        )} */}
-
-                <input
-                    type="text"
-                    name="bannerImage"
-                    value={form.bannerImage}
-                    className="input"
-                    onChange={handleChange}
-                />
-
-                {form.bannerImage && (
-                    <img
-                        src={form.bannerImage}
-                        className="h-40 rounded border"
-                    />
-                )}
-
-                <button className="bg-green-600 text-white px-6 py-2 rounded">
-                    Update Service
-                </button>
-
-            </form>
+      <AdminLayout title="Edit Service" description="Update service details">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-700"></div>
+            <p className="mt-4 text-gray-600">Loading service...</p>
+          </div>
         </div>
+      </AdminLayout>
     );
+  }
+
+  if (!form) {
+    return (
+      <AdminLayout title="Edit Service" description="Update service details">
+        <div className="bg-white rounded-lg shadow p-12 text-center">
+          <p className="text-gray-600">Service not found</p>
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  return (
+    <AdminLayout title="Edit Service" description="Update service details">
+      <div className="max-w-4xl mx-auto">
+        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md overflow-hidden">
+          {/* Form Content */}
+          <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Title */}
+            <div className="md:col-span-2">
+              <label className="block font-semibold text-gray-700 mb-2">Service Title *</label>
+              <input
+                type="text"
+                name="title"
+                value={form.title}
+                onChange={handleChange}
+                placeholder="Service title"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                required
+              />
+            </div>
+
+            {/* Short Description */}
+            <div className="md:col-span-2">
+              <label className="block font-semibold text-gray-700 mb-2">Short Description *</label>
+              <textarea
+                name="shortDescription"
+                value={form.shortDescription}
+                onChange={handleChange}
+                placeholder="Brief description of the service"
+                rows="3"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                required
+              />
+            </div>
+
+            {/* Introduction */}
+            <div className="md:col-span-2">
+              <label className="block font-semibold text-gray-700 mb-2">Introduction</label>
+              <textarea
+                name="intro"
+                value={form.intro}
+                onChange={handleChange}
+                placeholder="Detailed introduction to the service"
+                rows="4"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* Features */}
+            <div className="md:col-span-2">
+              <label className="block font-semibold text-gray-700 mb-2">Features</label>
+              <textarea
+                name="features"
+                value={form.features}
+                onChange={handleChange}
+                placeholder="Enter features (one per line)"
+                rows="4"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+              <p className="text-xs text-gray-500 mt-1">Enter each feature on a new line</p>
+            </div>
+
+            {/* Advantages */}
+            <div className="md:col-span-2">
+              <label className="block font-semibold text-gray-700 mb-2">Advantages</label>
+              <textarea
+                name="advantages"
+                value={form.advantages}
+                onChange={handleChange}
+                placeholder="Enter advantages (one per line)"
+                rows="4"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+              <p className="text-xs text-gray-500 mt-1">Enter each advantage on a new line</p>
+            </div>
+
+            {/* Banner Image URL */}
+            <div className="md:col-span-2">
+              <label className="block font-semibold text-gray-700 mb-2">Banner Image URL</label>
+              <input
+                type="url"
+                name="bannerImage"
+                value={form.bannerImage}
+                onChange={handleChange}
+                placeholder="https://example.com/image.jpg"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+
+          {/* Form Actions */}
+          <div className="px-8 py-6 bg-gray-50 border-t border-gray-200 flex gap-4">
+            <button
+              type="submit"
+              disabled={saving}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50"
+            >
+              {saving ? "Updating Service..." : "Update Service"}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/admin/services")}
+              className="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-semibold py-3 rounded-lg transition"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </AdminLayout>
+  );
 };
 
 export default EditService;

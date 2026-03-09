@@ -7,7 +7,6 @@ import { useAuth } from "../../hooks/useAuth";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -21,6 +20,11 @@ const AuthPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const toggleMode = () => {
+    setIsLogin(!isLogin);
+    setFormData({ name: "", email: "", password: "" });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -28,7 +32,7 @@ const AuthPage = () => {
       const endpoint = isLogin ? "login" : "signup";
       const payload = isLogin
         ? { email: formData.email, password: formData.password }
-        : formData;
+        : { ...formData };
 
       const res = await axios.post(`http://localhost:5000/api/auth/${endpoint}`, payload);
 
@@ -53,7 +57,11 @@ const AuthPage = () => {
         }
       }
     } catch (err) {
-      const errorMsg = err.response?.data?.error || err.response?.data?.message || "Something went wrong";
+      console.error('Auth error:', err);
+      const errorMsg = err.response?.data?.error || 
+                       err.response?.data?.message || 
+                       err.message || 
+                       "Something went wrong";
       toast.error(errorMsg);
     } finally {
       setLoading(false);
@@ -85,29 +93,14 @@ const AuthPage = () => {
         {/* RIGHT FORM */}
         <div className="p-8 md:p-12">
           <h2 className="text-3xl font-bold text-green-900 mb-2">
-            {isLogin ? (isAdmin ? "🔐 Admin Login" : "Welcome Back") : "Create Your Account"}
+            {isLogin ? "Welcome Back" : "Create Your Account"}
           </h2>
           <p className="text-sm text-gray-600 mb-4">
             {isLogin
-              ? isAdmin ? "Access admin dashboard and manage your platform" : "Login to manage your services and projects"
+              ? "Login to manage your services and projects"
               : "Join us and grow your green business"}
           </p>
 
-          {/* Admin Toggle */}
-          {isLogin && (
-            <div className="mb-6 flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200">
-              <input
-                type="checkbox"
-                id="admin-toggle"
-                checked={isAdmin}
-                onChange={(e) => setIsAdmin(e.target.checked)}
-                className="w-4 h-4 cursor-pointer"
-              />
-              <label htmlFor="admin-toggle" className="cursor-pointer text-sm font-medium text-gray-700">
-                🔐 Admin Login
-              </label>
-            </div>
-          )}
 
           {/* GOOGLE LOGIN */}
           <button
@@ -185,7 +178,7 @@ const AuthPage = () => {
           <p className="text-center text-sm mt-6 text-gray-600">
             {isLogin ? "Don’t have an account?" : "Already have an account?"}
             <button
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={toggleMode}
               className="ml-2 text-green-700 font-semibold hover:underline"
             >
               {isLogin ? "Sign Up" : "Login"}
