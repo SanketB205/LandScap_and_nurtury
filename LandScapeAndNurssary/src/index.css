@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans bg-nature-cream text-gray-800 antialiased;
+  }
+
+  h1, h2, h3 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 bg-primary-800 hover:bg-primary-900 text-white font-semibold px-6 py-3 rounded-full transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 border-2 border-primary-800 text-primary-800 hover:bg-primary-800 hover:text-white font-semibold px-6 py-3 rounded-full transition-all duration-300;
+  }
+
+  .btn-outline-white {
+    @apply inline-flex items-center gap-2 border-2 border-white text-white hover:bg-white hover:text-primary-800 font-semibold px-6 py-3 rounded-full transition-all duration-300;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-white rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1 overflow-hidden;
+  }
+
+  /* Section wrapper */
+  .section-wrapper {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-display font-bold text-gray-800 mb-3;
+  }
+
+  .section-subtitle {
+    @apply text-lg text-gray-500 mb-12 max-w-2xl mx-auto;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center gap-1 bg-secondary-100 text-primary-800 text-xs font-semibold px-3 py-1 rounded-full;
+  }
+
+  /* Input */
+  .input-field {
+    @apply w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-800/30 focus:border-primary-800 transition-all duration-200;
+  }
+
+  /* Navbar link */
+  .nav-link {
+    @apply relative text-gray-700 font-medium hover:text-primary-800 transition-colors duration-200 after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-0.5 after:bg-primary-800 after:transition-all after:duration-300 hover:after:w-full;
+  }
+
+  .nav-link-active {
+    @apply text-primary-800 after:w-full;
+  }
+
+  /* Hero overlay */
+  .hero-overlay {
+    @apply absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/20;
+  }
+
+  /* Page hero */
+  .page-hero {
+    @apply relative h-64 md:h-80 flex items-center justify-center overflow-hidden;
+  }
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #A5D6A7;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2E7D32;
+}
