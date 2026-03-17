@@ -57,18 +57,29 @@ const Products = () => {
   }
 
   return (
-    <div className="min-h-screen bg-nature-50/30 pt-20">
+    <div className="min-h-screen bg-nature-50/30">
       
       {/* ── Page Header (Visual Hero) ── */}
-      <section className="relative pt-20 pb-16 overflow-hidden">
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-100/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none" />
+      <section 
+        className="relative pt-32 pb-24 overflow-hidden text-white"
+        style={{ backgroundColor: '#0d3311' }}
+      >
+        {/* Leaf texture overlay */}
+        <div className="absolute inset-0 opacity-20 pointer-events-none">
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/leaf.png')]" />
+        </div>
+        {/* Glow blobs */}
+        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-10 pointer-events-none"
+          style={{ background: 'radial-gradient(circle, #4ade80, transparent 70%)' }} />
+        <div className="absolute bottom-0 -left-20 w-72 h-72 rounded-full opacity-10 pointer-events-none"
+          style={{ background: 'radial-gradient(circle, #86efac, transparent 70%)' }} />
         
         <div className="section-wrapper relative z-10 text-center">
-          <div className="flex items-center justify-center gap-2 mb-6 text-emerald-600 font-black uppercase tracking-[0.4em] text-[10px]">
+          <div className="flex items-center justify-center gap-2 mb-6 text-emerald-400 font-black uppercase tracking-[0.4em] text-[10px]">
              <Sparkles className="w-4 h-4" /> Discover your sanctuary
           </div>
-          <h1 className="text-6xl md:text-8xl font-display font-black text-primary-950 mb-8 leading-none">
-            Botanical <span className="text-emerald-600 italic">Treasures.</span>
+          <h1 className="text-6xl md:text-8xl font-display font-black text-white mb-8 leading-none">
+            Botanical <span className="text-emerald-400 italic">Treasures.</span>
           </h1>
           <div className="max-w-4xl mx-auto mb-12">
              <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
@@ -77,7 +88,7 @@ const Products = () => {
       </section>
 
       {/* ── Main Layout ── */}
-      <section className="section-wrapper pb-32">
+      <section className="section-wrapper pt-24 pb-32">
         <div className="flex flex-col lg:flex-row gap-16">
           
           {/* Sidebar Filters */}

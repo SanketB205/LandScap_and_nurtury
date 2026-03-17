@@ -3,7 +3,7 @@ import { Calendar, Clock, MessageCircle, Heart, ArrowRight, Tag } from 'lucide-r
 
 const BlogCard = ({ post }) => {
   return (
-    <div className="group bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-nature-50 flex flex-col">
+    <div className="group bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-nature-50 flex flex-col shimmer-dark">
       {/* Image */}
       <div className="relative aspect-[16/10] overflow-hidden">
         <img

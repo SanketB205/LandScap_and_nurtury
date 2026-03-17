@@ -46,7 +46,7 @@ const AdminProducts = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        const token = localStorage.getItem('token')
+        const token = localStorage.getItem('greenscape-token')
         const res = await fetch(`/api/products/${id}`, {
           method: 'DELETE',
           headers: {

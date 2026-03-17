@@ -125,7 +125,7 @@ const Home = () => {
 
             <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 animate-slide-up text-shadow">
               Transform Your
-              <span className="block text-secondary-300">Space With</span>
+              <span className="block text-secondary-300 shimmer">Space With</span>
               Nature
             </h1>
 
