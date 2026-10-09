@@ -15,6 +15,7 @@ function App() {
     <BrowserRouter>
     <Navbar/>
       <Routes>
+
         <Route path="/" element={<HomePage />} />
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/services/:slug" element={<ServiceDetails />} />
@@ -23,7 +24,7 @@ function App() {
         <Route path="/admin/services/edit/:id" element={<EditService />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/auth" element={<AuthPage/>}/>
-        
+
       </Routes>
       <Footer/>
     </BrowserRouter>
