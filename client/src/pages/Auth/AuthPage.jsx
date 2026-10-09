@@ -1,111 +1,230 @@
 import { useState } from "react";
-import bgImage from "../../assets/images/landscape_bg.jpg";
+import { useNavigate, Link } from "react-router-dom";
+import { Lock, Mail, User, Phone, ArrowRight, ShieldCheck, Leaf } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import { useToast } from "../../context/ToastContext";
 
-const AuthPage = () => {
+export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
+  const { login, register } = useAuth();
+  const { success, error } = useToast();
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    phone: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      if (isLogin) {
+        const user = await login(formData.email, formData.password);
+        success(`Welcome back, ${user.name}!`);
+        if (user.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
+      } else {
+        const user = await register({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          phone: formData.phone,
+        });
+        success(`Account created successfully! Welcome, ${user.name}`);
+        navigate("/");
+      }
+    } catch (err) {
+      error(err.message || "Authentication failed. Please check your credentials.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center px-4 relative"
-      style={{ backgroundImage: `url(${bgImage})` }}
-    >
-      {/* DARK OVERLAY */}
-      <div className="absolute inset-0 bg-black/40"></div>
+    <div className="min-h-screen flex items-center justify-center bg-[#142d20] py-16 px-4 sm:px-6 relative overflow-hidden">
+      {/* Background Graphic Pattern */}
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-20 mix-blend-overlay"
+        style={{
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1558904541-efa8c4a08931?auto=format&fit=crop&w=1920&q=80')",
+        }}
+      />
 
-      {/* AUTH CARD */}
-      <div className="relative grid md:grid-cols-2 w-full max-w-5xl bg-white/95 backdrop-blur-lg rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.35)] overflow-hidden">
-        
-        {/* LEFT BRANDING */}
-        <div className="hidden md:flex flex-col justify-center items-center bg-gradient-to-br from-green-900 via-green-800 to-green-700 text-white p-12">
-          <h1 className="text-4xl font-extrabold mb-4 tracking-wide">
-            GreenLandScape 🌿
-          </h1>
-          <p className="text-center text-green-100 max-w-sm">
-            Nurturing nature with premium landscaping & nursery solutions.
-          </p>
-          <div className="mt-8 w-32 h-1 bg-green-300 rounded-full" />
-        </div>
+      <div className="relative max-w-4xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-12 border border-white/20">
+        {/* Left Side: Brand Panel */}
+        <div className="md:col-span-5 bg-gradient-to-br from-[#1b4332] to-[#0d2818] p-8 sm:p-10 text-white flex flex-col justify-between">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-xl bg-lime-400 text-green-950 flex items-center justify-center font-bold">
+                <Leaf className="w-5 h-5" />
+              </div>
+              <span className="text-lg font-black font-serif">Janai Landscape</span>
+            </div>
 
-        {/* RIGHT FORM */}
-        <div className="p-8 md:p-12">
-          <h2 className="text-3xl font-bold text-green-900 mb-2">
-            {isLogin ? "Welcome Back" : "Create Your Account"}
-          </h2>
-          <p className="text-sm text-gray-600 mb-6">
-            {isLogin
-              ? "Login to manage your services and projects"
-              : "Join us and grow your green business"}
-          </p>
-
-          {/* GOOGLE LOGIN */}
-          <button
-            type="button"
-            className="w-full flex items-center justify-center gap-3 border border-gray-300 py-3 rounded-xl hover:bg-gray-50 transition font-medium"
-          >
-            <img
-              src="https://www.svgrepo.com/show/475656/google-color.svg"
-              alt="Google"
-              className="w-5 h-5"
-            />
-            Continue with Google
-          </button>
-
-          <div className="flex items-center gap-3 my-6">
-            <div className="flex-1 h-px bg-gray-300" />
-            <span className="text-sm text-gray-500">OR</span>
-            <div className="flex-1 h-px bg-gray-300" />
+            <h2 className="text-2xl font-black font-serif pt-4 leading-tight">
+              Customer & Staff Portal
+            </h2>
+            <p className="text-xs text-green-200 leading-relaxed">
+              Log in to track your landscaping project inquiries, review digital proposals,
+              and manage plant care orders.
+            </p>
           </div>
 
-          <form className="space-y-4">
+          <div className="pt-8 border-t border-green-800 text-xs text-green-300 space-y-2">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-lime-400" />
+              <span>Secure JWT Session Protection</span>
+            </div>
+            <p className="text-[11px] text-green-400">
+              Admin credentials provided during deployment:
+              <br />
+              <code className="text-white bg-black/30 px-1 py-0.5 rounded">
+                admin@janailandscape.com
+              </code>
+            </p>
+          </div>
+        </div>
+
+        {/* Right Side: Form */}
+        <div className="md:col-span-7 p-8 sm:p-10 space-y-6">
+          {/* Tabs */}
+          <div className="flex border-b border-gray-100 pb-3">
+            <button
+              onClick={() => setIsLogin(true)}
+              className={`flex-1 text-center py-2 text-xs font-bold transition ${
+                isLogin
+                  ? "text-green-800 border-b-2 border-green-700"
+                  : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => setIsLogin(false)}
+              className={`flex-1 text-center py-2 text-xs font-bold transition ${
+                !isLogin
+                  ? "text-green-800 border-b-2 border-green-700"
+                  : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              Create Account
+            </button>
+          </div>
+
+          <div>
+            <h3 className="text-xl font-bold text-gray-900">
+              {isLogin ? "Welcome Back" : "Join Janai Landscape Services"}
+            </h3>
+            <p className="text-xs text-gray-500 mt-1">
+              {isLogin
+                ? "Sign in with your email and password"
+                : "Register for faster inquiry tracking"}
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
-              <input
-                type="text"
-                placeholder="Full Name"
-                className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-600"
-              />
-            )}
-
-            <input
-              type="email"
-              placeholder="Email Address"
-              className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-600"
-            />
-
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-600"
-            />
-
-            {isLogin && (
-              <div className="text-right text-sm">
-                <a href="#" className="text-green-700 hover:underline">
-                  Forgot password?
-                </a>
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Full Name</label>
+                <div className="relative">
+                  <User className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" />
+                  <input
+                    type="text"
+                    name="name"
+                    required
+                    placeholder="e.g. Rahul Deshmukh"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-green-600 outline-none"
+                  />
+                </div>
               </div>
             )}
 
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-1">Email Address</label>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" />
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  placeholder="e.g. rahul@example.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-green-600 outline-none"
+                />
+              </div>
+            </div>
+
+            {!isLogin && (
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Phone Number</label>
+                <div className="relative">
+                  <Phone className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" />
+                  <input
+                    type="tel"
+                    name="phone"
+                    placeholder="e.g. +91 98220 12345"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-green-600 outline-none"
+                  />
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-1">Password</label>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" />
+                <input
+                  type="password"
+                  name="password"
+                  required
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-green-600 outline-none"
+                />
+              </div>
+            </div>
+
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-green-700 to-green-600 hover:from-green-800 hover:to-green-700 text-white font-semibold py-3 rounded-xl transition shadow-lg"
+              disabled={loading}
+              className="w-full bg-green-700 hover:bg-green-800 text-white font-extrabold py-3.5 rounded-xl transition text-xs shadow flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              {isLogin ? "Login" : "Sign Up"}
+              <span>{loading ? "Authenticating..." : isLogin ? "Sign In" : "Create Account"}</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
           </form>
 
-          <p className="text-center text-sm mt-6 text-gray-600">
-            {isLogin ? "Don’t have an account?" : "Already have an account?"}
+          <p className="text-center text-[11px] text-gray-500">
+            {isLogin ? "Don’t have an account yet?" : "Already registered?"}{" "}
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="ml-2 text-green-700 font-semibold hover:underline"
+              className="text-green-700 font-bold hover:underline"
             >
-              {isLogin ? "Sign Up" : "Login"}
+              {isLogin ? "Sign Up" : "Sign In"}
             </button>
           </p>
         </div>
       </div>
     </div>
   );
-};
-
-export default AuthPage;
+}

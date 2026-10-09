@@ -6,22 +6,16 @@ import {
   updateService,
   deleteService,
 } from "../controllers/service.controller.js";
+import { protect, adminOnly } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// CREATE SERVICE ✅ (THIS WAS MISSING)
-router.post("/", createService);
-
-// GET ALL SERVICES
 router.get("/", getAllServices);
-
-// GET SINGLE SERVICE BY SLUG
 router.get("/:slug", getServiceBySlug);
 
-// UPDATE SERVICE
-router.put("/:id", updateService);
-
-// DELETE SERVICE
-router.delete("/:id", deleteService);
+// Protected Admin Routes
+router.post("/", protect, adminOnly, createService);
+router.put("/:id", protect, adminOnly, updateService);
+router.delete("/:id", protect, adminOnly, deleteService);
 
 export default router;

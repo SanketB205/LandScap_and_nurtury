@@ -1,113 +1,192 @@
 import { Link } from "react-router-dom";
+import {
+  MapPin,
+  Phone,
+  Mail,
+  Clock,
+  MessageCircle,
+  ShieldCheck,
+  ArrowRight,
+  Leaf,
+} from "lucide-react";
 
-const Footer = () => {
+export default function Footer() {
   return (
-    <footer className="relative bg-[#2c2c2c] text-gray-300">
-      
-      {/* Pattern Overlay */}
-      <div className="absolute inset-0 bg-[url('/leaf-pattern.png')] opacity-10" />
+    <footer className="bg-[#142d20] text-gray-300 pt-16 pb-8 border-t border-green-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-green-800/60">
+          {/* Column 1: Company Profile */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-lime-500 flex items-center justify-center text-green-950 font-bold shadow-md">
+                <Leaf className="w-6 h-6 text-green-950" />
+              </div>
+              <div>
+                <span className="block text-lg font-black text-white font-serif tracking-tight">
+                  Janai Landscape
+                </span>
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-lime-400">
+                  Services & Nursery • Pune
+                </span>
+              </div>
+            </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 py-16 grid gap-10 md:grid-cols-4">
-        
-        {/* ABOUT */}
-        <div>
-          <h3 className="text-white text-xl font-bold mb-4">About Us</h3>
-          <p className="text-sm leading-relaxed text-gray-400">
-            EverGreen Associates is one of few companies in Pune working in
-            landscaping design & development as well as sports field construction.
-            Whether it's beautifying your garden or creating professional playgrounds,
-            we are there for you!
-          </p>
+            <p className="text-xs text-gray-400 leading-relaxed">
+              Pune’s premier landscape architecture, natural carpet turf, artificial grass,
+              commercial sports arenas, and wholesale nursery plant supply company. Transforming
+              villas, terraces, and commercial spaces across Maharashtra.
+            </p>
 
-          <button className="mt-6 bg-lime-500 hover:bg-lime-600 text-white px-6 py-3 rounded font-semibold transition">
-            Learn More
-          </button>
-        </div>
+            <div className="pt-2">
+              <a
+                href="https://wa.me/919767671968?text=Hello%20Janai%20Landscape%20Services,%20I%20would%20like%20to%20request%20a%20site%20visit."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20ba59] text-white px-4 py-2 rounded-xl text-xs font-bold shadow transition"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Chat on WhatsApp</span>
+              </a>
+            </div>
+          </div>
 
-        {/* EXTRA NAVIGATION */}
-        <div>
-          <h3 className="text-white text-xl font-bold mb-4">Extra Navigation</h3>
-          <ul className="space-y-2 text-sm">
-            {[
-              "Galleries",
-              "Frequently Asked Questions",
-              "Blog",
-              "Contact Us",
-              "Services",
-              "Privacy Policy",
-            ].map((item, i) => (
-              <li key={i} className="hover:text-lime-400 cursor-pointer transition">
-                ➜ {item}
+          {/* Column 2: Our Services */}
+          <div>
+            <h3 className="text-white text-sm font-bold uppercase tracking-wider mb-4 border-l-2 border-lime-400 pl-2.5">
+              Landscaping Services
+            </h3>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <Link to="/services/landscape-design-and-planning" className="hover:text-lime-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-green-500" /> Landscape Design & 3D Planning
+                </Link>
               </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* SERVICES */}
-        <div>
-          <h3 className="text-white text-xl font-bold mb-4">Our Services</h3>
-          <ul className="space-y-2 text-sm">
-            {[
-              "View all Services",
-              "Artificial Grass Dealer in Pune",
-              "LawnGrass Supply",
-              "Landscape Design",
-              "Football Turf",
-              "Terrace & Balcony Garden Ideas",
-              "Garden Maintenance Services",
-            ].map((item, i) => (
-              <li key={i} className="hover:text-lime-400 cursor-pointer transition">
-                ➜ {item}
+              <li>
+                <Link to="/services/garden-development-and-maintenance" className="hover:text-lime-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-green-500" /> Garden Development & Care
+                </Link>
               </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* WORKING HOURS */}
-        <div>
-          <h3 className="text-white text-xl font-bold mb-4">Working Hours</h3>
-          <ul className="space-y-3 text-sm">
-            {[
-              ["Monday", "09:00–20:00"],
-              ["Tuesday", "09:00–20:00"],
-              ["Wednesday", "09:00–20:00"],
-              ["Thursday", "09:00–20:00"],
-              ["Friday", "09:00–20:00"],
-              ["Saturday", "09:00–20:00"],
-            ].map(([day, time]) => (
-              <li key={day} className="flex justify-between border-b border-gray-600 pb-1">
-                <span>{day}</span>
-                <span>{time}</span>
+              <li>
+                <Link to="/services/natural-grass-and-artificial-turf-installation" className="hover:text-lime-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-green-500" /> Natural Grass & Artificial Turf
+                </Link>
               </li>
-            ))}
-            <li className="flex justify-between font-semibold text-lime-400">
-              <span>Sunday</span>
-              <span className="text-white bg-gray-800 px-3 py-1 rounded">
-                CLOSED
+              <li>
+                <Link to="/services/sports-ground-and-sports-field-development" className="hover:text-lime-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-green-500" /> Football & Sports Ground Turf
+                </Link>
+              </li>
+              <li>
+                <Link to="/services/irrigation-systems-drip-and-sprinkler" className="hover:text-lime-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-green-500" /> Drip & Pop-Up Sprinklers
+                </Link>
+              </li>
+              <li>
+                <Link to="/services/lawn-renovation-and-maintenance" className="hover:text-lime-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-green-500" /> Lawn Aeration & Renovation
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 3: Quick Navigation */}
+          <div>
+            <h3 className="text-white text-sm font-bold uppercase tracking-wider mb-4 border-l-2 border-lime-400 pl-2.5">
+              Quick Links
+            </h3>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <Link to="/plants" className="hover:text-lime-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-green-500" /> Nursery Plants Catalog
+                </Link>
+              </li>
+              <li>
+                <Link to="/estimator" className="hover:text-lime-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-green-500" /> Smart Cost Estimator Tool
+                </Link>
+              </li>
+              <li>
+                <Link to="/projects" className="hover:text-lime-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-green-500" /> Completed Projects Portfolio
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="hover:text-lime-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-green-500" /> About Our Pune Team
+                </Link>
+              </li>
+              <li>
+                <Link to="/quote" className="hover:text-lime-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-green-500" /> Request Official Quotation
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="hover:text-lime-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-green-500" /> Contact & Site Visit Booking
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 4: Pune Contact & Hours */}
+          <div className="space-y-3">
+            <h3 className="text-white text-sm font-bold uppercase tracking-wider mb-4 border-l-2 border-lime-400 pl-2.5">
+              Pune Office & Nursery
+            </h3>
+
+            <div className="flex items-start gap-2.5 text-xs">
+              <MapPin className="w-4 h-4 text-lime-400 shrink-0 mt-0.5" />
+              <span>
+                Survey No. 42, Near D-Mart, Baner-Balewadi Road, Pune, Maharashtra 411045
               </span>
-            </li>
-          </ul>
+            </div>
+
+            <div className="flex items-center gap-2.5 text-xs">
+              <Phone className="w-4 h-4 text-lime-400 shrink-0" />
+              <a href="tel:+919767671968" className="hover:text-white font-semibold">
+                +91 97676 71968
+              </a>
+            </div>
+
+            <div className="flex items-center gap-2.5 text-xs">
+              <Mail className="w-4 h-4 text-lime-400 shrink-0" />
+              <a href="mailto:contact@janailandscape.com" className="hover:text-white">
+                contact@janailandscape.com
+              </a>
+            </div>
+
+            <div className="flex items-start gap-2.5 text-xs text-gray-400">
+              <Clock className="w-4 h-4 text-lime-400 shrink-0 mt-0.5" />
+              <div>
+                <p>Mon–Sat: 8:30 AM – 7:30 PM</p>
+                <p>Sun: 9:00 AM – 2:00 PM</p>
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <Link
+                to="/admin"
+                className="inline-flex items-center gap-1 text-[11px] text-gray-500 hover:text-gray-300 transition"
+              >
+                <ShieldCheck className="w-3 h-3" />
+                <span>Admin Portal</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Credits & Copyright */}
+        <div className="pt-8 flex flex-col sm:flex-row justify-between items-center text-xs text-gray-500 gap-4">
+          <p>
+            © {new Date().getFullYear()} Janai Landscape Services (EverGreen Landscapes & Nursery). All rights reserved.
+          </p>
+          <div className="flex gap-6 text-[11px]">
+            <Link to="/services" className="hover:text-gray-300">Services in Pune</Link>
+            <Link to="/plants" className="hover:text-gray-300">Nursery Pune</Link>
+            <Link to="/estimator" className="hover:text-gray-300">Lawn Cost Calculator</Link>
+          </div>
         </div>
       </div>
-
-      {/* BOTTOM BAR */}
-      <div className="relative border-t border-gray-700 py-4 px-6 text-sm text-gray-400 flex flex-col md:flex-row items-center justify-between">
-        <span>© 2018 EverGreen Associates</span>
-        <span>We work all over Maharashtra</span>
-        <span>For more info contact: 9767671968</span>
-      </div>
-
-      {/* WHATSAPP FLOAT */}
-      <a
-        href="https://wa.me/919767671968"
-        target="_blank"
-        rel="noreferrer"
-        className="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-full shadow-xl flex items-center gap-2 font-semibold"
-      >
-        WhatsApp Us
-      </a>
     </footer>
   );
-};
-
-export default Footer;
+}

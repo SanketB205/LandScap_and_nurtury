@@ -1,15 +1,24 @@
 import { useState } from "react";
-import axios from "axios";
-import slugify from "slugify";
+import { useNavigate, Link } from "react-router-dom";
+import { ArrowLeft, Save } from "lucide-react";
+import api from "../../services/api";
+import { useToast } from "../../context/ToastContext";
 
-const AddService = () => {
+export default function AddService() {
+  const navigate = useNavigate();
+  const { success, error } = useToast();
+  const [submitting, setSubmitting] = useState(false);
+
   const [form, setForm] = useState({
     title: "",
+    category: "Landscaping",
+    startingPrice: 35,
+    priceUnit: "per sq ft",
     shortDescription: "",
     intro: "",
     features: "",
     advantages: "",
-    bannerImage: "",
+    bannerImage: "https://images.unsplash.com/photo-1558904541-efa8c4a08931?auto=format&fit=crop&w=1200&q=80",
   });
 
   const handleChange = (e) => {
@@ -18,146 +27,181 @@ const AddService = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
 
-    const payload = {
-      ...form,
-      slug: slugify(form.title, { lower: true }),
-      features: form.features.split("\n"),
-      advantages: form.advantages.split("\n"),
-    };
+    try {
+      const payload = {
+        ...form,
+        features: form.features.split("\n").filter(Boolean),
+        advantages: form.advantages.split("\n").filter(Boolean),
+      };
 
-    await axios.post("http://localhost:5000/api/services", payload);
-
-    alert("✅ Service Added Successfully");
-
-    // RESET FORM
-    setForm({
-      title: "",
-      shortDescription: "",
-      intro: "",
-      features: "",
-      advantages: "",
-      bannerImage: "",
-    });
+      const res = await api.post("/services", payload);
+      if (res.data.success) {
+        success("Service created and published!");
+        navigate("/admin/services");
+      }
+    } catch (err) {
+      error(err.message || "Failed to create service.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 py-12 px-4">
-      <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
-
-        {/* Header */}
-        <div className="bg-gradient-to-r from-green-700 to-green-500 p-6">
-          <h1 className="text-3xl font-bold text-white">🌿 Add New Service</h1>
-          <p className="text-green-100 mt-1">
-            Create a new landscaping or nursery service
-          </p>
-        </div>
-
-        {/* Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6"
+    <div className="space-y-6 max-w-4xl">
+      <div className="flex items-center gap-3">
+        <Link
+          to="/admin/services"
+          className="p-2 rounded-xl bg-white border hover:bg-gray-50 text-gray-600 transition"
         >
+          <ArrowLeft className="w-4 h-4" />
+        </Link>
+        <div>
+          <h1 className="text-2xl font-black font-serif text-gray-900">Add New Service</h1>
+          <p className="text-xs text-gray-500">Publish a new service to the public catalog</p>
+        </div>
+      </div>
 
-          {/* Title */}
-          <div className="md:col-span-2">
-            <label className="block font-semibold mb-1">Service Title</label>
-            <input
-              name="title"
-              value={form.title}
-              onChange={handleChange}
-              placeholder="Artificial Grass Installation"
-              className="w-full p-3 border rounded-xl focus:ring-2 focus:ring-green-500"
-              required
-            />
-          </div>
-
-          {/* Short Description */}
-          <div className="md:col-span-2">
-            <label className="block font-semibold mb-1">Short Description</label>
-            <textarea
-              name="shortDescription"
-              value={form.shortDescription}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-xl h-24 focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          {/* Intro */}
-          <div className="md:col-span-2">
-            <label className="block font-semibold mb-1">Introduction</label>
-            <textarea
-              name="intro"
-              value={form.intro}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-xl h-32 focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          {/* Features */}
+      <form onSubmit={handleSubmit} className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-200 shadow-sm space-y-5 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block font-semibold mb-1">Features</label>
-            <textarea
-              name="features"
-              value={form.features}
-              onChange={handleChange}
-              placeholder="Feature one&#10;Feature two"
-              className="w-full p-3 border rounded-xl h-40 focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          {/* Advantages */}
-          <div>
-            <label className="block font-semibold mb-1">Advantages</label>
-            <textarea
-              name="advantages"
-              value={form.advantages}
-              onChange={handleChange}
-              placeholder="Advantage one&#10;Advantage two"
-              className="w-full p-3 border rounded-xl h-40 focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          {/* Image URL */}
-          <div className="md:col-span-2">
-            <label className="block font-semibold mb-1">Banner Image URL</label>
+            <label className="block font-bold text-gray-700 mb-1">Service Title *</label>
             <input
               type="text"
-              value={form.bannerImage}
-              onChange={(e) =>
-                setForm({ ...form, bannerImage: e.target.value })
-              }
-              placeholder="https://images.unsplash.com/..."
-              className="w-full p-3 border rounded-xl focus:ring-2 focus:ring-green-500"
+              name="title"
+              required
+              placeholder="e.g. Drip Irrigation Systems"
+              value={form.title}
+              onChange={handleChange}
+              className="w-full p-2.5 rounded-xl border border-gray-200 outline-none"
             />
           </div>
 
-          {/* Preview */}
-          {form.bannerImage && (
-            <div className="md:col-span-2">
-              <p className="text-sm text-gray-500 mb-2">Preview</p>
-              <img
-                src={form.bannerImage}
-                alt="preview"
-                className="w-full h-64 object-cover rounded-xl border"
-              />
-            </div>
-          )}
-
-          {/* Submit */}
-          <div className="md:col-span-2 flex justify-end">
-            <button
-              type="submit"
-              className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl shadow-lg transition font-semibold"
+          <div>
+            <label className="block font-bold text-gray-700 mb-1">Category</label>
+            <select
+              name="category"
+              value={form.category}
+              onChange={handleChange}
+              className="w-full p-2.5 rounded-xl border border-gray-200 outline-none"
             >
-              🌱 Add Service
-            </button>
+              <option value="Landscaping">Landscaping</option>
+              <option value="Turf Installation">Turf Installation</option>
+              <option value="Garden Maintenance">Garden Maintenance</option>
+              <option value="Sports Field">Sports Field</option>
+              <option value="Irrigation">Irrigation</option>
+              <option value="Nursery">Nursery</option>
+            </select>
           </div>
 
-        </form>
-      </div>
+          <div>
+            <label className="block font-bold text-gray-700 mb-1">Starting Base Rate (₹)</label>
+            <input
+              type="number"
+              name="startingPrice"
+              value={form.startingPrice}
+              onChange={handleChange}
+              className="w-full p-2.5 rounded-xl border border-gray-200 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-gray-700 mb-1">Pricing Unit</label>
+            <input
+              type="text"
+              name="priceUnit"
+              placeholder="e.g. per sq ft, per month"
+              value={form.priceUnit}
+              onChange={handleChange}
+              className="w-full p-2.5 rounded-xl border border-gray-200 outline-none"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block font-bold text-gray-700 mb-1">Banner Image URL</label>
+          <input
+            type="url"
+            name="bannerImage"
+            value={form.bannerImage}
+            onChange={handleChange}
+            className="w-full p-2.5 rounded-xl border border-gray-200 outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="block font-bold text-gray-700 mb-1">Short Description *</label>
+          <textarea
+            name="shortDescription"
+            rows="2"
+            required
+            placeholder="Brief 2-line summary for cards..."
+            value={form.shortDescription}
+            onChange={handleChange}
+            className="w-full p-2.5 rounded-xl border border-gray-200 outline-none"
+          ></textarea>
+        </div>
+
+        <div>
+          <label className="block font-bold text-gray-700 mb-1">In-Depth Introduction</label>
+          <textarea
+            name="intro"
+            rows="3"
+            placeholder="Full service overview for the details page..."
+            value={form.intro}
+            onChange={handleChange}
+            className="w-full p-2.5 rounded-xl border border-gray-200 outline-none"
+          ></textarea>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-bold text-gray-700 mb-1">
+              Features (One per line)
+            </label>
+            <textarea
+              name="features"
+              rows="4"
+              placeholder="Laser-level grading&#10;Sub-base herringbone drainage&#10;UV-stabilized grass"
+              value={form.features}
+              onChange={handleChange}
+              className="w-full p-2.5 rounded-xl border border-gray-200 outline-none font-mono"
+            ></textarea>
+          </div>
+
+          <div>
+            <label className="block font-bold text-gray-700 mb-1">
+              Advantages & Benefits (One per line)
+            </label>
+            <textarea
+              name="advantages"
+              rows="4"
+              placeholder="Zero mud tracking&#10;Water conservation&#10;10-year durability"
+              value={form.advantages}
+              onChange={handleChange}
+              className="w-full p-2.5 rounded-xl border border-gray-200 outline-none font-mono"
+            ></textarea>
+          </div>
+        </div>
+
+        <div className="pt-2 flex justify-end gap-3">
+          <Link
+            to="/admin/services"
+            className="px-4 py-2.5 rounded-xl bg-gray-100 text-gray-700 font-bold"
+          >
+            Cancel
+          </Link>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="px-6 py-2.5 rounded-xl bg-green-700 hover:bg-green-800 text-white font-bold flex items-center gap-2 shadow"
+          >
+            <Save className="w-4 h-4" />
+            <span>{submitting ? "Saving..." : "Create Service"}</span>
+          </button>
+        </div>
+      </form>
     </div>
   );
-};
-
-export default AddService;
+}
