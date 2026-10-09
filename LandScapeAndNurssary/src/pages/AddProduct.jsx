@@ -56,7 +56,7 @@ const AddProduct = () => {
     setError(null)
 
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('greenscape-token')
       const data = new FormData()
       
       Object.keys(formData).forEach(key => {

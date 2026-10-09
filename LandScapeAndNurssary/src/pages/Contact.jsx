@@ -9,7 +9,7 @@ const contactInfo = [
     title: 'Visit Our Nursery',
     value: '42 Garden Street, Green Valley, Maharashtra 411001',
     action: 'Get Directions',
-    href: '#',
+    href: '#map',
   },
   {
     icon: Phone,
@@ -287,6 +287,19 @@ const Contact = () => {
               </div>
             </div>
           </div>
+        </div>
+        {/* ── Embedded Map View ── */}
+        <div id="map" className="mt-20 rounded-[2.5rem] overflow-hidden shadow-sm border border-nature-100 bg-white p-2 scroll-mt-32">
+           <iframe 
+             src="https://maps.google.com/maps?width=100%25&amp;height=450&amp;hl=en&amp;q=Pune,Maharashtra+(GreenScape%20Nursery)&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed" 
+             width="100%" 
+             height="450" 
+             style={{ border: 0, borderRadius: '2rem' }} 
+             allowFullScreen="" 
+             loading="lazy" 
+             referrerPolicy="no-referrer-when-downgrade"
+             title="GreenScape Nursery Location"
+           ></iframe>
         </div>
       </section>
 

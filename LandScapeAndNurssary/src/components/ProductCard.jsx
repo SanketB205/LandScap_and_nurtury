@@ -31,7 +31,7 @@ const ProductCard = ({ product }) => {
   }
 
   return (
-    <div className="group bg-white rounded-[2.5rem] p-4 shadow-sm hover:shadow-2xl transition-all duration-500 border border-nature-50 relative overflow-hidden flex flex-col h-full">
+    <div className="group bg-white rounded-[2.5rem] p-5 shadow-lg shadow-nature-200/40 hover:shadow-2xl hover:shadow-emerald-900/20 transition-all duration-500 border border-nature-100 relative overflow-hidden flex flex-col h-full hover:-translate-y-2 shimmer-dark">
       {/* Badges */}
       <div className="absolute top-6 left-6 z-10 flex flex-col gap-2">
         {product.isFeatured && (
@@ -52,7 +52,7 @@ const ProductCard = ({ product }) => {
       </div>
 
       {/* Image Container */}
-      <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden bg-nature-50 mb-6">
+      <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden bg-nature-50 mb-7">
         <img 
           src={product.image || 'https://placehold.co/400x500?text=GreenScape'} 
           alt={product.name} 
@@ -81,14 +81,14 @@ const ProductCard = ({ product }) => {
           </div>
         </div>
         
-        <h3 className="text-xl font-serif font-bold text-nature-900 mb-2 truncate group-hover:text-primary-700 transition-colors">
+        <h3 className="text-xl font-display font-black text-primary-950 mb-3 line-clamp-2 group-hover:text-emerald-700 transition-colors leading-tight">
           {product.name}
         </h3>
         
-        <div className="mt-auto flex items-center justify-between pt-4 border-t border-nature-50">
+        <div className="mt-auto flex items-center justify-between pt-5 border-t-2 border-dashed border-nature-100">
           <div className="flex flex-col">
-            <span className="text-xs text-nature-400 font-medium">Price</span>
-            <span className="text-2xl font-black text-nature-800 tracking-tight">₹{product.price}</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-1">Price</span>
+            <span className="text-3xl font-display font-black text-primary-950 tracking-tight">₹{product.price}</span>
           </div>
           
           <button 
@@ -96,10 +96,10 @@ const ProductCard = ({ product }) => {
             onClick={handleAddToCart}
             className={`w-14 h-14 rounded-2xl shadow-xl transition-all active:scale-95 flex items-center justify-center ${
               product.stock === 0 
-              ? 'bg-gray-100 text-gray-300 cursor-not-allowed'
+              ? 'bg-nature-100 text-nature-300 cursor-not-allowed border border-nature-200'
               : success 
-                ? 'bg-emerald-500 text-white' 
-                : 'bg-primary-800 text-white hover:bg-primary-900 hover:-translate-y-1'
+                ? 'bg-emerald-500 text-white shadow-emerald-500/30' 
+                : 'bg-primary-950 text-white hover:bg-emerald-700 hover:-translate-y-1 shadow-primary-900/20'
             }`}
           >
             {adding ? (

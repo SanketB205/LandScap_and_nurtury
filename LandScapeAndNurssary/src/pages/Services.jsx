@@ -102,33 +102,34 @@ const Services = () => {
       </section>
 
       {/* Filter & Search Bar */}
-      <div className="sticky top-20 z-40 bg-white/80 backdrop-blur-xl border-b border-nature-100 shadow-sm">
+      <div className="sticky top-20 z-40 bg-white/80 backdrop-blur-xl border-b border-nature-100 shadow-sm mb-16">
         <div className="section-wrapper py-4 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-1 overflow-x-auto pb-2 md:pb-0 no-scrollbar max-w-full">
+          <div className="flex items-center gap-3 overflow-x-auto pb-4 pt-1 slim-scrollbar max-w-full">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all ${
+                className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all whitespace-nowrap active:scale-95 ${
                   activeCategory === cat.id 
-                  ? 'bg-primary-900 text-white shadow-xl shadow-primary-900/20' 
-                  : 'text-primary-700 hover:bg-primary-50'
+                  ? 'text-white shadow-xl shadow-emerald-900/20' 
+                  : 'text-primary-900 hover:bg-nature-100'
                 }`}
+                style={activeCategory === cat.id ? { backgroundColor: '#0d3311' } : {}}
               >
-                <cat.icon className="w-3.5 h-3.5" />
+                <cat.icon className="w-4 h-4" />
                 {cat.label}
               </button>
             ))}
           </div>
 
           <div className="relative w-full md:w-80">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-400" />
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-600/50" />
             <input 
               type="text" 
               placeholder="Search services..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-6 py-3 bg-nature-50 border border-nature-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium text-sm"
+              className="w-full pl-12 pr-6 py-4 bg-nature-50 border border-nature-100 rounded-2xl outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-400 font-medium text-sm transition-all"
             />
           </div>
         </div>
