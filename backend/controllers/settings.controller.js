@@ -14,8 +14,8 @@ export const getSettings = async (req, res, next) => {
   }
 };
 
-// @desc    Update site settings & pricing rules
-// @route   PUT /api/settings (Admin only)
+// @desc    Update site settings & pricing rules (Admin only)
+// @route   PUT /api/settings
 export const updateSettings = async (req, res, next) => {
   try {
     let settings = await SiteSettings.findOne();

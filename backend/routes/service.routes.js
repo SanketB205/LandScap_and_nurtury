@@ -5,6 +5,7 @@ import {
   getServiceBySlug,
   updateService,
   deleteService,
+  archiveService,
 } from "../controllers/service.controller.js";
 import { protect, adminOnly } from "../middleware/auth.js";
 
@@ -16,6 +17,7 @@ router.get("/:slug", getServiceBySlug);
 // Protected Admin Routes
 router.post("/", protect, adminOnly, createService);
 router.put("/:id", protect, adminOnly, updateService);
+router.patch("/:id/archive", protect, adminOnly, archiveService);
 router.delete("/:id", protect, adminOnly, deleteService);
 
 export default router;

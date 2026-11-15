@@ -13,22 +13,30 @@ const serviceSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       lowercase: true,
+      index: true,
     },
     category: {
       type: String,
       default: "Landscaping",
+      trim: true,
     },
     shortDescription: {
       type: String,
       required: true,
+      trim: true,
+    },
+    intro: {
+      type: String,
+      default: "",
+      trim: true,
     },
     bannerImage: {
       type: String,
       default: "https://images.unsplash.com/photo-1558904541-efa8c4a08931?auto=format&fit=crop&w=1200&q=80",
     },
-    intro: {
-      type: String,
-      default: "",
+    gallery: {
+      type: [String],
+      default: [],
     },
     features: {
       type: [String],
@@ -38,23 +46,27 @@ const serviceSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
-    startingPrice: {
-      type: Number,
-      default: 0,
-    },
-    priceUnit: {
-      type: String,
-      default: "per sq ft",
-    },
     faqs: [
       {
         question: { type: String, required: true },
         answer: { type: String, required: true },
       },
     ],
-    gallery: {
-      type: [String],
-      default: [],
+    startingPrice: {
+      type: Number,
+      default: 0,
+      min: [0, "Starting price cannot be negative"],
+    },
+    priceUnit: {
+      type: String,
+      default: "per sq ft",
+      trim: true,
+    },
+    // Units: square_feet, square_metres, per_project
+    unit: {
+      type: String,
+      enum: ["square_feet", "square_metres", "per_project"],
+      default: "square_feet",
     },
     isFeatured: {
       type: Boolean,
@@ -62,11 +74,23 @@ const serviceSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["active", "draft"],
+      enum: ["active", "draft", "archived"],
       default: "active",
+    },
+    // SEO fields
+    seoTitle: {
+      type: String,
+      trim: true,
+    },
+    seoDescription: {
+      type: String,
+      trim: true,
     },
   },
   { timestamps: true }
 );
+
+serviceSchema.index({ category: 1, status: 1 });
+serviceSchema.index({ isFeatured: 1, status: 1 });
 
 export default mongoose.model("Service", serviceSchema);

@@ -1,5 +1,6 @@
 import Quotation from "../models/Quotation.js";
 import Inquiry from "../models/Inquiry.js";
+import SiteSettings from "../models/SiteSettings.js";
 
 // Generate collision-resistant quotation number
 const generateQuoteNumber = async () => {
@@ -27,7 +28,7 @@ export const createQuotation = async (req, res, next) => {
       customerPhone,
       projectTitle,
       items,
-      gstPercent = 18,
+      taxPercent,
       terms,
     } = req.body;
 
@@ -38,18 +39,28 @@ export const createQuotation = async (req, res, next) => {
       });
     }
 
+    // Get configurable tax rate from SiteSettings
+    let settings = await SiteSettings.findOne();
+    const defaultTaxPercent = settings?.taxConfig?.percent ?? 0;
+    const effectiveTaxPercent = taxPercent !== undefined ? Number(taxPercent) : defaultTaxPercent;
+
     const calculatedItems = items.map((item) => ({
       description: item.description,
       quantity: Number(item.quantity) || 1,
       unit: item.unit || "sq ft",
       unitPrice: Number(item.unitPrice) || 0,
-      total: (Number(item.quantity) || 1) * (Number(item.unitPrice) || 0),
+      total: Math.round((Number(item.quantity) || 1) * (Number(item.unitPrice) || 0) * 100) / 100,
     }));
 
-    const subtotal = calculatedItems.reduce((acc, curr) => acc + curr.total, 0);
-    const gstAmount = Math.round((subtotal * (Number(gstPercent) || 18)) / 100);
-    const grandTotal = subtotal + gstAmount;
+    const subtotal = Math.round(
+      calculatedItems.reduce((acc, curr) => acc + curr.total, 0) * 100
+    ) / 100;
+    const taxAmount = Math.round(subtotal * (effectiveTaxPercent / 100) * 100) / 100;
+    const grandTotal = Math.round((subtotal + taxAmount) * 100) / 100;
     const quoteNumber = await generateQuoteNumber();
+
+    // Immutable snapshot of items
+    const itemsSnapshot = JSON.stringify(calculatedItems);
 
     const quotation = await Quotation.create({
       quoteNumber,
@@ -60,15 +71,31 @@ export const createQuotation = async (req, res, next) => {
       projectTitle: projectTitle || "Custom Landscaping & Turf Installation",
       items: calculatedItems,
       subtotal,
-      gstPercent: Number(gstPercent) || 18,
-      gstAmount,
+      taxPercent: effectiveTaxPercent,
+      taxAmount,
       grandTotal,
       terms: terms || [
         "Quote valid for 30 days from date of issuance.",
         "Payment terms: 50% advance on confirmation, 30% after surface preparation, 20% on completion handover.",
         "Water and electrical connections at site to be provided by client.",
+        "Estimated completion time subject to weather conditions.",
+        "This is an estimate, not a tax invoice. Final pricing may vary after site inspection.",
       ],
       status: "Sent",
+      itemsSnapshot,
+      currentRevision: 1,
+      revisionHistory: [
+        {
+          status: "Sent",
+          changedBy: "Admin",
+          changedAt: new Date(),
+          note: "Quotation created",
+          subtotal,
+          taxPercent: effectiveTaxPercent,
+          taxAmount,
+          grandTotal,
+        },
+      ],
     });
 
     // If linked to an inquiry, update inquiry status
@@ -91,12 +118,33 @@ export const createQuotation = async (req, res, next) => {
   }
 };
 
-// @desc    Get all quotations
+// @desc    Get all quotations (paginated)
 // @route   GET /api/quotations (Admin only)
 export const getAllQuotations = async (req, res, next) => {
   try {
-    const quotations = await Quotation.find().sort({ createdAt: -1 });
-    res.status(200).json({ success: true, count: quotations.length, data: quotations });
+    const { page = 1, limit = 20, status } = req.query;
+    let query = {};
+    if (status && status !== "all") {
+      query.status = status;
+    }
+
+    const pageNum = Math.max(1, parseInt(page));
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
+    const skip = (pageNum - 1) * limitNum;
+
+    const [quotations, total] = await Promise.all([
+      Quotation.find(query).sort({ createdAt: -1 }).skip(skip).limit(limitNum),
+      Quotation.countDocuments(query),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      count: quotations.length,
+      total,
+      page: pageNum,
+      pages: Math.ceil(total / limitNum),
+      data: quotations,
+    });
   } catch (error) {
     next(error);
   }
@@ -106,7 +154,12 @@ export const getAllQuotations = async (req, res, next) => {
 // @route   GET /api/quotations/:id
 export const getQuotationById = async (req, res, next) => {
   try {
-    const quotation = await Quotation.findById(req.params.id);
+    let quotation;
+    if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      quotation = await Quotation.findById(req.params.id);
+    } else {
+      quotation = await Quotation.findOne({ quoteNumber: req.params.id });
+    }
     if (!quotation) {
       return res.status(404).json({ success: false, message: "Quotation not found." });
     }
@@ -120,15 +173,37 @@ export const getQuotationById = async (req, res, next) => {
 // @route   PATCH /api/quotations/:id/status
 export const updateQuotationStatus = async (req, res, next) => {
   try {
-    const { status } = req.body;
-    const quotation = await Quotation.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true, runValidators: true }
-    );
+    const { status, note } = req.body;
+    const validStatuses = ["Draft", "Sent", "Accepted", "Rejected"];
+
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid status. Must be one of: ${validStatuses.join(", ")}`,
+      });
+    }
+
+    const quotation = await Quotation.findById(req.params.id);
     if (!quotation) {
       return res.status(404).json({ success: false, message: "Quotation not found." });
     }
+
+    // Add revision history entry
+    quotation.revisionHistory.push({
+      status,
+      changedBy: req.user?.name || "Admin",
+      changedAt: new Date(),
+      note: note || `Status updated to ${status}`,
+      subtotal: quotation.subtotal,
+      taxPercent: quotation.taxPercent,
+      taxAmount: quotation.taxAmount,
+      grandTotal: quotation.grandTotal,
+    });
+    quotation.currentRevision = (quotation.currentRevision || 1) + 1;
+    quotation.status = status;
+
+    await quotation.save();
+
     res.status(200).json({ success: true, data: quotation });
   } catch (error) {
     next(error);

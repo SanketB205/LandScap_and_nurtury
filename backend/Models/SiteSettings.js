@@ -16,7 +16,7 @@ const siteSettingsSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      default: "info@janailandscape.com",
+      default: "contact@janailandscape.com",
     },
     address: {
       type: String,
@@ -43,12 +43,22 @@ const siteSettingsSchema = new mongoose.Schema(
     pricingRules: {
       naturalLawnPerSqFt: { type: Number, default: 35 },
       artificialTurfPerSqFt: { type: Number, default: 75 },
+      sportsTurfPerSqFt: { type: Number, default: 110 },
       dripIrrigationPerSqFt: { type: Number, default: 18 },
       sprinklerSystemPerSqFt: { type: Number, default: 28 },
       soilPreparationPerSqFt: { type: Number, default: 12 },
       landscapeDesignBaseRate: { type: Number, default: 4500 },
-      sportsTurfPerSqFt: { type: Number, default: 110 },
       maintenancePerMonthBase: { type: Number, default: 3500 },
+    },
+    // Tax configuration (GST in India)
+    taxConfig: {
+      enabled: { type: Boolean, default: true },
+      percent: { type: Number, default: 18, min: 0, max: 100 },
+      label: { type: String, default: "GST" },
+      note: {
+        type: String,
+        default: "This is an estimate, not a tax invoice. Final pricing may vary after site inspection.",
+      },
     },
   },
   { timestamps: true }

@@ -19,6 +19,9 @@ import ContactPage from "./pages/Contact";
 import QuoteRequestPage from "./pages/QuoteRequestPage";
 import AuthPage from "./pages/Auth/AuthPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsConditions from "./pages/TermsConditions";
+import CookiePolicy from "./pages/CookiePolicy";
 
 // Admin Pages
 import AdminLayout from "./pages/Admin/AdminLayout";
@@ -154,6 +157,30 @@ export default function App() {
               element={
                 <PublicLayout>
                   <AuthPage />
+                </PublicLayout>
+              }
+            />
+            <Route
+              path="/privacy-policy"
+              element={
+                <PublicLayout>
+                  <PrivacyPolicy />
+                </PublicLayout>
+              }
+            />
+            <Route
+              path="/terms-conditions"
+              element={
+                <PublicLayout>
+                  <TermsConditions />
+                </PublicLayout>
+              }
+            />
+            <Route
+              path="/cookie-policy"
+              element={
+                <PublicLayout>
+                  <CookiePolicy />
                 </PublicLayout>
               }
             />

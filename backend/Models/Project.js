@@ -13,11 +13,13 @@ const projectSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       lowercase: true,
+      index: true,
     },
     location: {
       type: String,
       required: [true, "Location is required"],
       default: "Pune, Maharashtra",
+      trim: true,
     },
     category: {
       type: String,
@@ -28,14 +30,17 @@ const projectSchema = new mongoose.Schema(
     description: {
       type: String,
       required: true,
+      trim: true,
     },
     clientName: {
       type: String,
       default: "Private Client",
+      trim: true,
     },
     area: {
       type: String,
       default: "",
+      trim: true,
     },
     beforeImage: {
       type: String,
@@ -59,11 +64,23 @@ const projectSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["published", "draft"],
+      enum: ["published", "draft", "archived"],
       default: "published",
+    },
+    // SEO fields
+    seoTitle: {
+      type: String,
+      trim: true,
+    },
+    seoDescription: {
+      type: String,
+      trim: true,
     },
   },
   { timestamps: true }
 );
+
+projectSchema.index({ category: 1, status: 1 });
+projectSchema.index({ isFeatured: 1, status: 1 });
 
 export default mongoose.model("Project", projectSchema);

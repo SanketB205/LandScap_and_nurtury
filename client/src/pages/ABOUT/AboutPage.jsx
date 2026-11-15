@@ -92,11 +92,10 @@ export default function AboutPage() {
               lay grass or arrange plants; we design sustainable ecosystems that thrive effortlessly
               under Pune's tropical climate.
             </p>
-            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-              With our expansive nursery base, experienced agronomists, and skilled landscaping craftsmen,
-              we have successfully executed over 870 garden projects across Baner, Koregaon Park,
-              Kothrud, Hinjewadi, Wakad, Mulshi, and surrounding districts.
-            </p>
+              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                With our nursery base, experienced agronomists, and skilled landscaping craftsmen,
+                we serve residential and commercial clients across Pune and surrounding districts.
+              </p>
 
             <div className="pt-2 flex flex-wrap gap-4">
               <Link
@@ -114,19 +113,15 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="lg:col-span-6 relative">
-            <div className="rounded-3xl overflow-hidden shadow-2xl h-96 bg-gray-100">
-              <img
-                src="https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=1200&q=80"
-                alt="Janai Landscape team at work"
-                className="w-full h-full object-cover"
-              />
+            <div className="lg:col-span-6 relative">
+              <div className="rounded-3xl overflow-hidden shadow-2xl h-96 bg-gray-100">
+                <img
+                  src="https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=1200&q=80"
+                  alt="Janai Landscape team at work"
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
-            <div className="absolute -bottom-6 -left-6 bg-lime-400 text-green-950 p-6 rounded-2xl shadow-xl font-bold hidden sm:block">
-              <span className="block text-3xl font-black">870+</span>
-              <span className="text-xs uppercase tracking-wider font-extrabold">Gardens Delivered</span>
-            </div>
-          </div>
         </div>
 
         {/* Mission & Vision */}

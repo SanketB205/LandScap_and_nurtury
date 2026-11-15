@@ -7,6 +7,13 @@ const plantSchema = new mongoose.Schema(
       required: [true, "Plant name is required"],
       trim: true,
     },
+    slug: {
+      type: String,
+      unique: true,
+      trim: true,
+      lowercase: true,
+      index: true,
+    },
     botanicalName: {
       type: String,
       trim: true,
@@ -21,10 +28,12 @@ const plantSchema = new mongoose.Schema(
     description: {
       type: String,
       required: true,
+      trim: true,
     },
     careInstructions: {
       type: String,
       default: "Water when top soil feels dry. Ensure adequate natural sunlight.",
+      trim: true,
     },
     sunlight: {
       type: String,
@@ -48,11 +57,13 @@ const plantSchema = new mongoose.Schema(
     price: {
       type: Number,
       required: true,
+      min: [0, "Price cannot be negative"],
       default: 0,
     },
     stockQuantity: {
       type: Number,
-      default: 25,
+      min: [0, "Stock quantity cannot be negative"],
+      default: 0,
     },
     inStock: {
       type: Boolean,
@@ -64,7 +75,7 @@ const plantSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["active", "draft"],
+      enum: ["active", "draft", "archived"],
       default: "active",
     },
     isFeatured: {
@@ -75,6 +86,33 @@ const plantSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Auto-generate slug from name before saving
+plantSchema.pre("save", async function (next) {
+  if (this.isModified("name") && !this.slug) {
+    const slug = this.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    // Check for slug collision
+    const existing = await this.constructor.findOne({ slug });
+    if (existing) {
+      this.slug = `${slug}-${Date.now().toString().slice(-6)}`;
+    } else {
+      this.slug = slug;
+    }
+  }
+  // Sync inStock based on stockQuantity
+  if (this.stockQuantity <= 0) {
+    this.inStock = false;
+  } else {
+    this.inStock = true;
+  }
+  next();
+});
+
 plantSchema.index({ name: "text", botanicalName: "text", description: "text" });
+plantSchema.index({ category: 1, status: 1 });
+plantSchema.index({ isFeatured: 1, status: 1 });
+plantSchema.index({ inStock: 1, status: 1 });
 
 export default mongoose.model("Plant", plantSchema);

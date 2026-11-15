@@ -5,6 +5,9 @@ import mongoose from "mongoose";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 
+// Database connection
+import { connectDB } from "./models/Database.js";
+
 // Routes
 import authRoutes from "./routes/auth.routes.js";
 import serviceRoutes from "./routes/service.routes.js";
@@ -19,6 +22,7 @@ import analyticsRoutes from "./routes/analytics.routes.js";
 
 // Middleware
 import { errorHandler } from "./middleware/errorHandler.js";
+import { csrfToken, csrfProtection } from "./middleware/csrf.js";
 
 dotenv.config();
 
@@ -61,6 +65,12 @@ app.use(
   })
 );
 
+// CSRF token issuance (all responses get a csrf_token cookie)
+app.use(csrfToken);
+
+// CSRF protection for state-changing requests
+app.use(csrfProtection);
+
 
 // Health check route
 app.get("/api/health", (req, res) => {
@@ -88,25 +98,16 @@ app.use("/api/analytics", analyticsRoutes);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-const MONGO_URI =
-  process.env.MONGO_URI ||
-  process.env.mongourl ||
-  "mongodb://localhost:27017/Nursery";
 
-mongoose
-  .connect(MONGO_URI)
+connectDB()
   .then(() => {
-    console.log("✅ MongoDB Connected Successfully to:", MONGO_URI);
     app.listen(PORT, () => {
       console.log(`🌿 Janai Landscape Services Server running on http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
-    console.error("❌ MongoDB Connection Error:", err.message);
-    // Still start server so non-db calls/health check report status
-    app.listen(PORT, () => {
-      console.log(`⚠️ Server running with DB error on port ${PORT}`);
-    });
+    console.error("❌ Failed to connect to database:", err.message);
+    process.exit(1);
   });
 
 export default app;

@@ -8,6 +8,17 @@ const quotationItemSchema = new mongoose.Schema({
   total: { type: Number, required: true, default: 0 },
 });
 
+const quotationRevisionSchema = new mongoose.Schema({
+  status: { type: String, required: true },
+  changedBy: { type: String, default: "Admin" },
+  changedAt: { type: Date, default: Date.now },
+  note: { type: String, default: "" },
+  subtotal: { type: Number, default: 0 },
+  taxPercent: { type: Number, default: 0 },
+  taxAmount: { type: Number, default: 0 },
+  grandTotal: { type: Number, default: 0 },
+});
+
 const quotationSchema = new mongoose.Schema(
   {
     quoteNumber: {
@@ -22,19 +33,24 @@ const quotationSchema = new mongoose.Schema(
     customerName: {
       type: String,
       required: true,
+      trim: true,
     },
     customerEmail: {
       type: String,
       required: true,
+      trim: true,
+      lowercase: true,
     },
     customerPhone: {
       type: String,
       required: true,
+      trim: true,
     },
     projectTitle: {
       type: String,
       required: true,
       default: "Landscaping & Turf Development",
+      trim: true,
     },
     items: [quotationItemSchema],
     subtotal: {
@@ -42,11 +58,11 @@ const quotationSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
-    gstPercent: {
+    taxPercent: {
       type: Number,
-      default: 18,
+      default: 0,
     },
-    gstAmount: {
+    taxAmount: {
       type: Number,
       default: 0,
     },
@@ -62,10 +78,11 @@ const quotationSchema = new mongoose.Schema(
     terms: {
       type: [String],
       default: [
-        "Quote valid for 30 days from issue date.",
-        "50% advance on project confirmation, 30% on material delivery, 20% on completion.",
-        "Site must provide access to water and electricity.",
+        "Quote valid for 30 days from date of issuance.",
+        "Payment terms: 50% advance on confirmation, 30% after surface preparation, 20% on completion handover.",
+        "Water and electrical connections at site to be provided by client.",
         "Estimated completion time subject to weather conditions.",
+        "This is an estimate, not a tax invoice. Final pricing may vary after site inspection.",
       ],
     },
     status: {
@@ -73,8 +90,21 @@ const quotationSchema = new mongoose.Schema(
       enum: ["Draft", "Sent", "Accepted", "Rejected"],
       default: "Draft",
     },
+    // Immutable snapshot: store a copy of items at time of issuance
+    itemsSnapshot: {
+      type: String,
+      default: "",
+    },
+    revisionHistory: [quotationRevisionSchema],
+    currentRevision: {
+      type: Number,
+      default: 1,
+    },
   },
   { timestamps: true }
 );
+
+quotationSchema.index({ quoteNumber: 1 }, { unique: true });
+quotationSchema.index({ inquiryId: 1 });
 
 export default mongoose.model("Quotation", quotationSchema);

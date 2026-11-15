@@ -1,6 +1,7 @@
 /**
  * Comprehensive API Test Runner for Janai Landscape Services
  * Run via: node tests/api.test.js
+ * Requires backend running at TEST_URL (default http://localhost:5000)
  */
 
 const BASE_URL = process.env.TEST_URL || "http://localhost:5000";
@@ -18,6 +19,39 @@ function assert(condition, message) {
   }
 }
 
+// Simple cookie jar for Node fetch (no persistent cookie store)
+let cookieStore = "";
+
+function extractCookies(res) {
+  const setCookie = res.headers.get("set-cookie");
+  if (!setCookie) return;
+  const cookies = Array.isArray(setCookie) ? setCookie : [setCookie];
+  for (const c of cookies) {
+    const nameVal = c.split(";")[0].trim();
+    const [name, ...valParts] = nameVal.split("=");
+    const value = valParts.join("=");
+    if (name && value) {
+      cookieStore = cookieStore.replace(new RegExp(`${name}=[^;]*`), "") || cookieStore;
+      cookieStore += `${cookieStore ? "; " : ""}${name}=${value}`;
+    }
+  }
+}
+
+function fetchWithCookies(url, options = {}) {
+  const headers = {
+    "Content-Type": "application/json",
+    ...options.headers,
+  };
+  if (cookieStore) {
+    headers.Cookie = cookieStore;
+  }
+  return fetch(url, {
+    ...options,
+    credentials: "include",
+    headers,
+  });
+}
+
 async function runTests() {
   console.log(`\n🌿 Starting Janai Landscape Services API Tests against ${BASE_URL}...\n`);
 
@@ -25,6 +59,7 @@ async function runTests() {
   try {
     const res = await fetch(`${BASE_URL}/api/health`);
     const data = await res.json();
+    extractCookies(res);
     assert(res.status === 200, "GET /api/health returns 200 OK");
     assert(data.status === "ok", "Health status is 'ok'");
   } catch (err) {
@@ -66,11 +101,12 @@ async function runTests() {
     assert(false, `Plants test failed: ${err.message}`);
   }
 
-  // 4. Smart Estimator Calculation
+  // 4. Smart Estimator Calculation (needs CSRF token)
   try {
-    const estRes = await fetch(`${BASE_URL}/api/planner/estimate`, {
+    const csrfToken = cookieStore.match(/csrf_token=([^;]+)/)?.[1];
+    const estRes = await fetchWithCookies(`${BASE_URL}/api/planner/estimate`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: csrfToken ? { "X-CSRF-Token": csrfToken } : {},
       body: JSON.stringify({
         areaLength: 20,
         areaWidth: 30,
@@ -80,6 +116,7 @@ async function runTests() {
       }),
     });
     const estData = await estRes.json();
+    extractCookies(estRes);
     assert(estRes.status === 200, "POST /api/planner/estimate returns 200 OK");
     assert(estData.data.areaSqFt === 600, "Estimator correctly computes area (20x30 = 600 sq ft)");
     assert(estData.data.totalEstimate > 0, "Estimator returns positive total cost");
@@ -88,11 +125,12 @@ async function runTests() {
     assert(false, `Estimator test failed: ${err.message}`);
   }
 
-  // 5. Public Quote & Inquiry Submission with Unique Reference ID
+  // 5. Public Quote & Inquiry Submission with Unique Reference ID (needs CSRF token)
   try {
-    const inqRes = await fetch(`${BASE_URL}/api/inquiries`, {
+    const csrfToken = cookieStore.match(/csrf_token=([^;]+)/)?.[1];
+    const inqRes = await fetchWithCookies(`${BASE_URL}/api/inquiries`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: csrfToken ? { "X-CSRF-Token": csrfToken } : {},
       body: JSON.stringify({
         name: "Test Client",
         phone: "+91 99999 88888",
@@ -106,6 +144,7 @@ async function runTests() {
       }),
     });
     const inqData = await inqRes.json();
+    extractCookies(inqRes);
     assert(inqRes.status === 201, "POST /api/inquiries returns 201 Created");
     assert(Boolean(inqData.referenceId), `Generated Reference ID: ${inqData.referenceId}`);
     assert(inqData.referenceId.startsWith("JLS-INQ-"), "Reference ID matches format JLS-INQ-XXXXX");
@@ -113,7 +152,7 @@ async function runTests() {
     assert(false, `Inquiry submission failed: ${err.message}`);
   }
 
-  // 6. Security & Unauthorized Admin Route Access
+  // 6. Security & Unauthorized Admin Route Access (no cookies)
   try {
     const unauthRes = await fetch(`${BASE_URL}/api/inquiries`);
     assert(unauthRes.status === 401, "GET /api/inquiries without token returns 401 Unauthorized");
@@ -124,30 +163,26 @@ async function runTests() {
     assert(false, `Security test failed: ${err.message}`);
   }
 
-  // 7. Admin Authentication Flow
+  // 7. Admin Authentication Flow (cookie-based)
   try {
-    const loginRes = await fetch(`${BASE_URL}/api/auth/login`, {
+    const loginRes = await fetchWithCookies(`${BASE_URL}/api/auth/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: process.env.TEST_ADMIN_EMAIL || "admin@janailandscape.com",
         password: process.env.TEST_ADMIN_PASSWORD || "Admin@Janai2026",
       }),
     });
     const loginData = await loginRes.json();
+    extractCookies(loginRes);
     assert(loginRes.status === 200, "POST /api/auth/login with valid credentials returns 200 OK");
-    assert(Boolean(loginData.token), "Auth response contains JWT token");
+    assert(Boolean(loginData.user), "Auth response contains user object");
     assert(loginData.user.role === "admin", "User role is confirmed as admin");
 
-    if (loginData.token) {
-      // Test authorized admin route
-      const adminStatsRes = await fetch(`${BASE_URL}/api/analytics/stats`, {
-        headers: { Authorization: `Bearer ${loginData.token}` },
-      });
-      const statsData = await adminStatsRes.json();
-      assert(adminStatsRes.status === 200, "GET /api/analytics/stats with admin JWT returns 200 OK");
-      assert(statsData.data.totalInquiries >= 0, "Admin stats provides real inquiry count");
-    }
+    // Test authorized admin route using cookies
+    const adminStatsRes = await fetchWithCookies(`${BASE_URL}/api/analytics/stats`);
+    const statsData = await adminStatsRes.json();
+    assert(adminStatsRes.status === 200, "GET /api/analytics/stats with admin cookie returns 200 OK");
+    assert(statsData.data.totalInquiries >= 0, "Admin stats provides real inquiry count");
   } catch (err) {
     assert(false, `Admin auth test failed: ${err.message}`);
   }

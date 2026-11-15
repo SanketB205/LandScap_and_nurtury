@@ -125,6 +125,21 @@ export default function Footer() {
                   <ArrowRight className="w-3 h-3 text-green-500" /> Contact & Site Visit Booking
                 </Link>
               </li>
+              <li>
+                <Link to="/privacy-policy" className="hover:text-lime-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-green-500" /> Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms-conditions" className="hover:text-lime-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-green-500" /> Terms and Conditions
+                </Link>
+              </li>
+              <li>
+                <Link to="/cookie-policy" className="hover:text-lime-400 transition flex items-center gap-1.5">
+                  <ArrowRight className="w-3 h-3 text-green-500" /> Cookie Policy
+                </Link>
+              </li>
             </ul>
           </div>
 

@@ -226,24 +226,24 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. STATS COUNTER STRIP */}
+      {/* 2. SERVICE AREA TRUST STRIP */}
       <section className="bg-white border-b border-gray-100 py-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           <div className="p-4 rounded-2xl bg-[#f6fff3] border border-green-50">
-            <h3 className="text-3xl sm:text-4xl font-black text-green-900">870+</h3>
-            <p className="text-xs sm:text-sm font-semibold text-gray-600 mt-1">Gardens Designed</p>
+            <h3 className="text-3xl sm:text-4xl font-black text-green-900">Pune</h3>
+            <p className="text-xs sm:text-sm font-semibold text-gray-600 mt-1">Service Area</p>
           </div>
           <div className="p-4 rounded-2xl bg-[#f6fff3] border border-green-50">
-            <h3 className="text-3xl sm:text-4xl font-black text-green-900">48,000+</h3>
-            <p className="text-xs sm:text-sm font-semibold text-gray-600 mt-1">Sq Ft Turf Installed</p>
+            <h3 className="text-3xl sm:text-4xl font-black text-green-900">Maharashtra</h3>
+            <p className="text-xs sm:text-sm font-semibold text-gray-600 mt-1">Coverage Region</p>
           </div>
           <div className="p-4 rounded-2xl bg-[#f6fff3] border border-green-50">
-            <h3 className="text-3xl sm:text-4xl font-black text-green-900">100%</h3>
-            <p className="text-xs sm:text-sm font-semibold text-gray-600 mt-1">Customer Satisfaction</p>
+            <h3 className="text-3xl sm:text-4xl font-black text-green-900">8</h3>
+            <p className="text-xs sm:text-sm font-semibold text-gray-600 mt-1">Core Services</p>
           </div>
           <div className="p-4 rounded-2xl bg-[#f6fff3] border border-green-50">
-            <h3 className="text-3xl sm:text-4xl font-black text-green-900">25+</h3>
-            <p className="text-xs sm:text-sm font-semibold text-gray-600 mt-1">Pune Horticulturists</p>
+            <h3 className="text-3xl sm:text-4xl font-black text-green-900">Direct</h3>
+            <p className="text-xs sm:text-sm font-semibold text-gray-600 mt-1">Nursery Supply</p>
           </div>
         </div>
       </section>

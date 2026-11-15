@@ -6,6 +6,7 @@ import {
   createPlant,
   updatePlant,
   deletePlant,
+  archivePlant,
 } from "../controllers/plant.controller.js";
 import { protect, adminOnly } from "../middleware/auth.js";
 
@@ -18,6 +19,7 @@ router.get("/:id", getPlantById);
 // Protected Admin Routes
 router.post("/", protect, adminOnly, createPlant);
 router.put("/:id", protect, adminOnly, updatePlant);
+router.patch("/:id/archive", protect, adminOnly, archivePlant);
 router.delete("/:id", protect, adminOnly, deletePlant);
 
 export default router;

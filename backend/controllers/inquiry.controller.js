@@ -1,19 +1,29 @@
 import Inquiry from "../models/Inquiry.js";
 
-// Generate unique reference ID
-const generateReferenceId = async () => {
-  let isUnique = false;
-  let referenceId = "";
+// Allowed status transitions
+const ALLOWED_TRANSITIONS = {
+  New: ["Contacted", "Rejected"],
+  Contacted: ["Quotation Sent", "Rejected"],
+  "Quotation Sent": ["Approved", "Rejected"],
+  Approved: ["Completed"],
+  Rejected: [],
+  Completed: [],
+};
 
-  while (!isUnique) {
+// Generate unique reference ID with collision protection
+const generateReferenceId = async () => {
+  let attempts = 0;
+  const maxAttempts = 100;
+  while (attempts < maxAttempts) {
     const randomDigits = Math.floor(10000 + Math.random() * 90000);
-    referenceId = `JLS-INQ-${randomDigits}`;
+    const referenceId = `JLS-INQ-${randomDigits}`;
     const existing = await Inquiry.findOne({ referenceId });
     if (!existing) {
-      isUnique = true;
+      return referenceId;
     }
+    attempts++;
   }
-  return referenceId;
+  throw new Error("Unable to generate unique reference ID after multiple attempts.");
 };
 
 // @desc    Submit new inquiry / quotation request
@@ -42,22 +52,40 @@ export const createInquiry = async (req, res, next) => {
       });
     }
 
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a valid email address.",
+      });
+    }
+
+    // Basic phone validation (allow digits, spaces, +, -, parentheses)
+    const phoneRegex = /^[\d\s\+\-\(\)]+$/;
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a valid phone number.",
+      });
+    }
+
     const referenceId = await generateReferenceId();
 
     const inquiry = await Inquiry.create({
       referenceId,
       type: type || "quote",
-      name,
-      phone,
-      email,
+      name: name.trim(),
+      phone: phone.trim(),
+      email: email.toLowerCase().trim(),
       serviceName: serviceName || "General Landscaping",
       propertyType: propertyType || "Residential Villa",
       areaSqFt: Number(areaSqFt) || 0,
       location: location || "Pune, Maharashtra",
       budgetRange: budgetRange || "₹25,000 - ₹50,000",
       preferredDate: preferredDate || null,
-      message: message || "",
-      referenceImages: referenceImages || [],
+      message: message ? message.trim() : "",
+      referenceImages: Array.isArray(referenceImages) ? referenceImages : [],
       status: "New",
       statusHistory: [
         {
@@ -96,7 +124,6 @@ export const getAllInquiries = async (req, res, next) => {
     }
 
     if (search) {
-      // Escape special regex characters to prevent injection
       const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       query.$or = [
         { referenceId: { $regex: escapedSearch, $options: "i" } },
@@ -143,11 +170,12 @@ export const getInquiryById = async (req, res, next) => {
   }
 };
 
-// @desc    Update inquiry status
+// @desc    Update inquiry status with validated transitions
 // @route   PATCH /api/inquiries/:id/status (Admin only)
 export const updateInquiryStatus = async (req, res, next) => {
   try {
     const { status, note } = req.body;
+
     const validStatuses = ["New", "Contacted", "Quotation Sent", "Approved", "Rejected", "Completed"];
 
     if (!validStatuses.includes(status)) {
@@ -162,11 +190,20 @@ export const updateInquiryStatus = async (req, res, next) => {
       return res.status(404).json({ success: false, message: "Inquiry not found." });
     }
 
+    // Validate status transition
+    const allowedNext = ALLOWED_TRANSITIONS[inquiry.status] || [];
+    if (inquiry.status !== status && !allowedNext.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot transition from "${inquiry.status}" to "${status}". Allowed: ${allowedNext.join(", ") || "none"}`,
+      });
+    }
+
     inquiry.status = status;
     inquiry.statusHistory.push({
       status,
       changedAt: new Date(),
-      note: note || `Status updated to ${status} by ${req.user.name}`,
+      note: note || `Status updated to ${status} by ${req.user?.name || "Admin"}`,
     });
 
     await inquiry.save();
@@ -192,7 +229,7 @@ export const addInquiryNote = async (req, res, next) => {
 
     inquiry.internalNotes.push({
       note: note.trim(),
-      author: req.user.name || "Admin",
+      author: req.user?.name || "Admin",
       date: new Date(),
     });
 
@@ -203,8 +240,8 @@ export const addInquiryNote = async (req, res, next) => {
   }
 };
 
-// @desc    Delete inquiry
-// @route   DELETE /api/inquiries/:id (Admin only)
+// @desc    Delete inquiry (Admin only)
+// @route   DELETE /api/inquiries/:id
 export const deleteInquiry = async (req, res, next) => {
   try {
     const inquiry = await Inquiry.findById(req.params.id);

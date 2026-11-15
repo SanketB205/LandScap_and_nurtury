@@ -7,17 +7,42 @@ export const calculateEstimate = async (req, res, next) => {
     const {
       areaLength,
       areaWidth,
-      surfaceType = "natural-lawn", // 'natural-lawn' | 'artificial-turf' | 'sports-turf' | 'garden-mix'
-      irrigationType = "none", // 'none' | 'drip' | 'sprinkler'
+      areaSqFt: directAreaSqFt,
+      surfaceType = "natural-lawn",
+      irrigationType = "none",
       includeSoilPrep = true,
       includePathway = false,
       includeLighting = false,
-      plantPreference = "medium", // 'minimal' | 'medium' | 'dense'
+      plantPreference = "medium",
+      measurementUnit = "feet", // 'feet' | 'metres'
     } = req.body;
 
+    // Validate inputs
     const length = Number(areaLength) || 0;
     const width = Number(areaWidth) || 0;
-    const areaSqFt = length * width > 0 ? length * width : Number(req.body.areaSqFt) || 500;
+    const directArea = Number(directAreaSqFt) || 0;
+
+    let areaSqFt = 0;
+
+    if (directArea > 0) {
+      // Direct area provided
+      areaSqFt = measurementUnit === "metres" ? directArea * 10.7639 : directArea;
+    } else if (length > 0 && width > 0) {
+      const calculatedArea = length * width;
+      areaSqFt = measurementUnit === "metres" ? calculatedArea * 10.7639 : calculatedArea;
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide either length & width or a direct area value.",
+      });
+    }
+
+    if (areaSqFt <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Area must be greater than zero.",
+      });
+    }
 
     // Retrieve live pricing rules from SiteSettings
     let settings = await SiteSettings.findOne();
@@ -25,31 +50,24 @@ export const calculateEstimate = async (req, res, next) => {
       settings = await SiteSettings.create({});
     }
 
-    const rules = settings.pricingRules || {
-      naturalLawnPerSqFt: 35,
-      artificialTurfPerSqFt: 75,
-      sportsTurfPerSqFt: 110,
-      dripIrrigationPerSqFt: 18,
-      sprinklerSystemPerSqFt: 28,
-      soilPreparationPerSqFt: 12,
-      landscapeDesignBaseRate: 4500,
-    };
+    const rules = settings.pricingRules || {};
+    const taxConfig = settings.taxConfig || { enabled: true, percent: 18, label: "GST" };
 
     const breakdown = [];
     let subtotal = 0;
 
     // 1. Surface Material
-    let surfaceRate = rules.naturalLawnPerSqFt;
+    let surfaceRate = rules.naturalLawnPerSqFt || 35;
     let surfaceName = "Natural Lawn Grass (Selection One / Korean)";
 
     if (surfaceType === "artificial-turf") {
-      surfaceRate = rules.artificialTurfPerSqFt;
+      surfaceRate = rules.artificialTurfPerSqFt || 75;
       surfaceName = "Premium 35mm UV-Treated Artificial Grass & Base";
     } else if (surfaceType === "sports-turf") {
-      surfaceRate = rules.sportsTurfPerSqFt;
+      surfaceRate = rules.sportsTurfPerSqFt || 110;
       surfaceName = "FIFA-Standard Sports Turf with Rubber Infill";
     } else if (surfaceType === "garden-mix") {
-      surfaceRate = Math.round((rules.naturalLawnPerSqFt + rules.artificialTurfPerSqFt) / 2);
+      surfaceRate = Math.round(((rules.naturalLawnPerSqFt || 35) + (rules.artificialTurfPerSqFt || 75)) / 2);
       surfaceName = "Hybrid Lawn & Ornamental Planting Bed";
     }
 
@@ -57,68 +75,76 @@ export const calculateEstimate = async (req, res, next) => {
     breakdown.push({
       item: surfaceName,
       unitPrice: surfaceRate,
-      quantity: areaSqFt,
+      quantity: Math.round(areaSqFt),
       unit: "sq ft",
       cost: surfaceCost,
+      note: "Surface material and installation",
     });
     subtotal += surfaceCost;
 
     // 2. Soil Preparation & Grading
     if (includeSoilPrep && surfaceType !== "artificial-turf" && surfaceType !== "sports-turf") {
-      const soilCost = Math.round(areaSqFt * (rules.soilPreparationPerSqFt || 12));
+      const soilRate = rules.soilPreparationPerSqFt || 12;
+      const soilCost = Math.round(areaSqFt * soilRate);
       breakdown.push({
         item: "Red Soil Enriched with Vermicompost & Surface Grading",
-        unitPrice: rules.soilPreparationPerSqFt || 12,
-        quantity: areaSqFt,
+        unitPrice: soilRate,
+        quantity: Math.round(areaSqFt),
         unit: "sq ft",
         cost: soilCost,
+        note: "Soil preparation and grading",
       });
       subtotal += soilCost;
     }
 
     // 3. Irrigation System
     if (irrigationType === "drip") {
-      const dripCost = Math.round(areaSqFt * (rules.dripIrrigationPerSqFt || 18));
+      const dripRate = rules.dripIrrigationPerSqFt || 18;
+      const dripCost = Math.round(areaSqFt * dripRate);
       breakdown.push({
         item: "Automated Drip Irrigation with Micro-Drippers & Timer",
-        unitPrice: rules.dripIrrigationPerSqFt || 18,
-        quantity: areaSqFt,
+        unitPrice: dripRate,
+        quantity: Math.round(areaSqFt),
         unit: "sq ft",
         cost: dripCost,
+        note: "Drip irrigation system",
       });
       subtotal += dripCost;
     } else if (irrigationType === "sprinkler") {
-      const sprinklerCost = Math.round(areaSqFt * (rules.sprinklerSystemPerSqFt || 28));
+      const sprinklerRate = rules.sprinklerSystemPerSqFt || 28;
+      const sprinklerCost = Math.round(areaSqFt * sprinklerRate);
       breakdown.push({
         item: "Pop-Up Gear-Driven Lawn Sprinkler Network",
-        unitPrice: rules.sprinklerSystemPerSqFt || 28,
-        quantity: areaSqFt,
+        unitPrice: sprinklerRate,
+        quantity: Math.round(areaSqFt),
         unit: "sq ft",
         cost: sprinklerCost,
+        note: "Sprinkler system",
       });
       subtotal += sprinklerCost;
     }
 
     // 4. Plant Density Package
-    let plantCost = 0;
     if (plantPreference === "dense") {
-      plantCost = Math.round(areaSqFt * 20);
+      const plantCost = Math.round(areaSqFt * 20);
       breakdown.push({
         item: "Lush Plant Density (Shrubs, Flowering Hedges, Accent Palms)",
         unitPrice: 20,
-        quantity: areaSqFt,
+        quantity: Math.round(areaSqFt),
         unit: "sq ft",
         cost: plantCost,
+        note: "Dense planting package",
       });
       subtotal += plantCost;
     } else if (plantPreference === "medium") {
-      plantCost = Math.round(areaSqFt * 12);
+      const plantCost = Math.round(areaSqFt * 12);
       breakdown.push({
         item: "Curated Plant Package (Perennial Shrubs & Accent Plants)",
         unitPrice: 12,
-        quantity: areaSqFt,
+        quantity: Math.round(areaSqFt),
         unit: "sq ft",
         cost: plantCost,
+        note: "Medium planting package",
       });
       subtotal += plantCost;
     }
@@ -132,6 +158,7 @@ export const calculateEstimate = async (req, res, next) => {
         quantity: 1,
         unit: "lot",
         cost: pathwayCost,
+        note: "One-time installation",
       });
       subtotal += pathwayCost;
     }
@@ -144,6 +171,7 @@ export const calculateEstimate = async (req, res, next) => {
         quantity: 1,
         unit: "lot",
         cost: lightingCost,
+        note: "One-time installation",
       });
       subtotal += lightingCost;
     }
@@ -156,28 +184,44 @@ export const calculateEstimate = async (req, res, next) => {
       quantity: 1,
       unit: "fixed",
       cost: designFee,
+      note: "One-time design fee",
     });
     subtotal += designFee;
 
-    const estimatedTax = Math.round(subtotal * 0.18); // 18% GST estimate
-    const totalEstimate = subtotal + estimatedTax;
+    // Calculate tax using configurable rate
+    const taxPercent = taxConfig.enabled ? (taxConfig.percent || 0) : 0;
+    const taxAmount = Math.round(subtotal * (taxPercent / 100));
+    const totalEstimate = subtotal + taxAmount;
+
+    // Material takeoffs
+    const turfWastePercent = 5; // 5% cutting waste
+    const turfRequired = Math.round(areaSqFt * (1 + turfWastePercent / 100));
+    const soilBags = Math.round(areaSqFt / 25);
+    const workDays = Math.max(3, Math.ceil(areaSqFt / 300));
+
+    const estimateData = {
+      areaSqFt: Math.round(areaSqFt),
+      areaSqMetres: Math.round(areaSqFt / 10.7639),
+      breakdown,
+      subtotal,
+      taxPercent,
+      taxAmount,
+      totalEstimate,
+      taxLabel: taxConfig.label || "GST",
+      taxNote: taxConfig.note || "",
+      materialEstimates: {
+        turfRequiredSqFt: turfRequired,
+        soilBagsEstimated: soilBags,
+        estimatedWorkDays: workDays,
+        estimatedWorkDaysRange: `${workDays} to ${workDays + 3} working days`,
+      },
+      disclaimer:
+        "This is a preliminary planning estimate based on standard Pune site conditions. Actual costs may vary depending on slope, accessibility, soil excavation needs, and plant selections. This is not a tax invoice. Final pricing is determined after a physical site inspection.",
+    };
 
     res.status(200).json({
       success: true,
-      data: {
-        areaSqFt,
-        breakdown,
-        subtotal,
-        estimatedTax,
-        totalEstimate,
-        materialEstimates: {
-          turfRequiredSqFt: Math.round(areaSqFt * 1.05), // 5% cutting waste
-          soilBagsEstimated: Math.round(areaSqFt / 25),
-          estimatedWorkDays: Math.max(3, Math.ceil(areaSqFt / 300)),
-        },
-        disclaimer:
-          "This is a preliminary planning estimate based on standard Pune site conditions. Actual costs may vary depending on slope, accessibility, soil excavation needs, and plant selections.",
-      },
+      data: estimateData,
     });
   } catch (error) {
     next(error);

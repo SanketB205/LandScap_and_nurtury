@@ -10,17 +10,20 @@ const api = axios.create({
   },
 });
 
-// Request interceptor to attach JWT if saved in localStorage
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("jls_token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+// Attach CSRF token from cookie to state-changing requests
+api.interceptors.request.use((config) => {
+  const method = (config.method || "get").toLowerCase();
+  if (["post", "put", "patch", "delete"].includes(method)) {
+    // Read csrf_token from document.cookie
+    const match = document.cookie.match(
+      /(?:^|; )csrf_token=([^;]*)/
+    );
+    if (match) {
+      config.headers["X-CSRF-Token"] = match[1];
     }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+  }
+  return config;
+});
 
 // Response interceptor for centralized error formatting
 api.interceptors.response.use(
