@@ -32,26 +32,35 @@ app.use(cookieParser());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// CORS setup
-const allowedOrigins = [
+// CORS setup — restrictive by default, driven by ALLOWED_ORIGINS env var
+const defaultOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
   "http://127.0.0.1:5173",
   "http://127.0.0.1:3000",
 ];
 
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+  : defaultOrigins;
+
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      // Allow requests with no origin (mobile apps, curl, Postman in dev)
+      if (!origin) {
+        return callback(null, true);
+      }
+      if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(null, true); // Allow during development
+        callback(new Error(`CORS policy: Origin ${origin} not allowed.`));
       }
     },
     credentials: true,
   })
 );
+
 
 // Health check route
 app.get("/api/health", (req, res) => {

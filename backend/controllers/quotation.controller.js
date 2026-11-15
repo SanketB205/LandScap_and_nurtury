@@ -1,6 +1,21 @@
 import Quotation from "../models/Quotation.js";
 import Inquiry from "../models/Inquiry.js";
 
+// Generate collision-resistant quotation number
+const generateQuoteNumber = async () => {
+  let isUnique = false;
+  let quoteNumber = "";
+  while (!isUnique) {
+    const year = new Date().getFullYear();
+    const random = Math.floor(1000 + Math.random() * 9000);
+    const ts = Date.now().toString().slice(-4);
+    quoteNumber = `JLS-QT-${year}-${random}${ts}`;
+    const existing = await Quotation.findOne({ quoteNumber });
+    if (!existing) isUnique = true;
+  }
+  return quoteNumber;
+};
+
 // @desc    Generate a new digital quotation
 // @route   POST /api/quotations (Admin only)
 export const createQuotation = async (req, res, next) => {
@@ -34,7 +49,7 @@ export const createQuotation = async (req, res, next) => {
     const subtotal = calculatedItems.reduce((acc, curr) => acc + curr.total, 0);
     const gstAmount = Math.round((subtotal * (Number(gstPercent) || 18)) / 100);
     const grandTotal = subtotal + gstAmount;
-    const quoteNumber = `JLS-QT-${Math.floor(1000 + Math.random() * 9000)}-${new Date().getFullYear()}`;
+    const quoteNumber = await generateQuoteNumber();
 
     const quotation = await Quotation.create({
       quoteNumber,

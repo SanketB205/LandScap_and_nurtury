@@ -3,9 +3,13 @@ import User from "../models/User.js";
 
 // Helper to generate JWT and send cookie
 const sendTokenResponse = (user, statusCode, res) => {
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    throw new Error("JWT_SECRET environment variable is not set. Cannot issue tokens.");
+  }
   const token = jwt.sign(
     { id: user._id, role: user.role },
-    process.env.JWT_SECRET || "janai_landscape_secret_key_2026_dev",
+    jwtSecret,
     { expiresIn: "7d" }
   );
 

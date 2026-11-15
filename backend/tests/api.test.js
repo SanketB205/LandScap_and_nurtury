@@ -130,8 +130,8 @@ async function runTests() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: "admin@janailandscape.com",
-        password: "Admin@Janai2026",
+        email: process.env.TEST_ADMIN_EMAIL || "admin@janailandscape.com",
+        password: process.env.TEST_ADMIN_PASSWORD || "Admin@Janai2026",
       }),
     });
     const loginData = await loginRes.json();

@@ -80,11 +80,11 @@ export const createInquiry = async (req, res, next) => {
   }
 };
 
-// @desc    Get all inquiries (Admin only)
-// @route   GET /api/inquiries
+// @desc    Get all inquiries (Admin only) — paginated
+// @route   GET /api/inquiries?page=1&limit=20&status=New&search=xyz
 export const getAllInquiries = async (req, res, next) => {
   try {
-    const { status, search, type } = req.query;
+    const { status, search, type, page = 1, limit = 20 } = req.query;
     let query = {};
 
     if (status && status !== "all") {
@@ -96,17 +96,34 @@ export const getAllInquiries = async (req, res, next) => {
     }
 
     if (search) {
+      // Escape special regex characters to prevent injection
+      const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       query.$or = [
-        { referenceId: { $regex: search, $options: "i" } },
-        { name: { $regex: search, $options: "i" } },
-        { phone: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
-        { location: { $regex: search, $options: "i" } },
+        { referenceId: { $regex: escapedSearch, $options: "i" } },
+        { name: { $regex: escapedSearch, $options: "i" } },
+        { phone: { $regex: escapedSearch, $options: "i" } },
+        { email: { $regex: escapedSearch, $options: "i" } },
+        { location: { $regex: escapedSearch, $options: "i" } },
       ];
     }
 
-    const inquiries = await Inquiry.find(query).sort({ createdAt: -1 });
-    res.status(200).json({ success: true, count: inquiries.length, data: inquiries });
+    const pageNum = Math.max(1, parseInt(page));
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
+    const skip = (pageNum - 1) * limitNum;
+
+    const [inquiries, total] = await Promise.all([
+      Inquiry.find(query).sort({ createdAt: -1 }).skip(skip).limit(limitNum),
+      Inquiry.countDocuments(query),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      count: inquiries.length,
+      total,
+      page: pageNum,
+      pages: Math.ceil(total / limitNum),
+      data: inquiries,
+    });
   } catch (error) {
     next(error);
   }

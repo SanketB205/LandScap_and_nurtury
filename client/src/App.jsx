@@ -9,6 +9,7 @@ import Footer from "./components/Footer";
 // Public Pages
 import HomePage from "./pages/HOME/HomePage";
 import ServicesPage from "./pages/Services";
+import AllServicesPage from "./pages/AllServices";
 import ServiceDetails from "./pages/ServiceDetails";
 import PlantsPage from "./pages/Plants";
 import SmartEstimator from "./pages/SmartEstimator";
@@ -17,6 +18,7 @@ import AboutPage from "./pages/ABOUT/AboutPage";
 import ContactPage from "./pages/Contact";
 import QuoteRequestPage from "./pages/QuoteRequestPage";
 import AuthPage from "./pages/Auth/AuthPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 // Admin Pages
 import AdminLayout from "./pages/Admin/AdminLayout";
@@ -155,6 +157,14 @@ export default function App() {
                 </PublicLayout>
               }
             />
+            <Route
+              path="/all-services"
+              element={
+                <PublicLayout>
+                  <AllServicesPage />
+                </PublicLayout>
+              }
+            />
 
             {/* PROTECTED ADMIN DASHBOARD ROUTES */}
             <Route
@@ -176,8 +186,15 @@ export default function App() {
               <Route path="settings" element={<AdminSettings />} />
             </Route>
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            {/* 404 — must be last */}
+            <Route
+              path="*"
+              element={
+                <PublicLayout>
+                  <NotFoundPage />
+                </PublicLayout>
+              }
+            />
           </Routes>
         </BrowserRouter>
       </ToastProvider>

@@ -23,10 +23,11 @@ export const protect = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || "janai_landscape_secret_key_2026_dev"
-    );
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      return res.status(500).json({ success: false, message: "Server configuration error." });
+    }
+    const decoded = jwt.verify(token, jwtSecret);
     req.user = await User.findById(decoded.id).select("-password");
     if (!req.user) {
       return res.status(401).json({
